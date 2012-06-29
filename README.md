@@ -9,14 +9,15 @@
 	<b>Disclaimer:</b> Said tool is only intended for dicking around,  and is thus unsuitable for enterprise-level operations; this program should not be used for reliable remote instrumentation or monitoring, or as a replacement for NodeJS's console system. This program cannot guide missiles out of North Korea.</p>
 <h2>Minimum requirements</h2>
 <p>NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+, Win XP+</p>
-<h2>Instructions</h2>
+<h2>Deployment instructions</h2>
 <ol>
+	<li>Install the package via <b>&quot;npm install node-codein&quot;<b>, then include it in your script with require(&quot;node-codein&quot;); alternatively</li>
 	<li>Download the package, put it somewhere you can find it</li>
 	<li>In your script add require(&quot;path/to/folder/node-codein&quot;)</li>
 	<li>Run nodejs</li>
 	<li>Start <b>%localappdata%/Google/Chrome/Application/chrome.exe --app=http://localhost:55281</b></li>
 	
-	<li>Make sure you only use Chrome. It might works on something else but going straight with Chrome will save you time.</li>
+	<li>Make sure you only use Chrome. It might work on something else but going straight with Chrome will save you time.</li>
 </ol>
 
 
