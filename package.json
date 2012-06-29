@@ -1,4 +1,21 @@
 {
-	"name":"node_debug",
-	"main":"./debugger.js"
+  "author": "ketamynx (http://www.edmtop.com/)",
+  "name": "node-codein",
+  "description": "NodeJS Console Object Debug Inspector",
+  "keywords": ["console","inspect","inspector","object","tree","outline","viewer","debug","debugger","webkit","runtime","eval"],
+  "version": "1.0.0",
+  "homepage": "https://github.com/ketamynx/node-codein",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ketamynx/node-codein.git"
+  },
+  "bugs": "https://github.com/ketamynx/node-codein/issues",
+  "main": "debugger.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
 }
+
