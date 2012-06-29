@@ -1,0 +1,4 @@
+{
+	"name":"node_debug",
+	"main":"./debugger.js"
+}
