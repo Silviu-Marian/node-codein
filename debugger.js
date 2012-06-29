@@ -45,10 +45,21 @@ var dbg = {
 			if(!dbg.cons.length) return dbg.pendingBroadcast = setTimeout(function(){ sendFn(); },dbg.broadcastLag);
 			
 			var data = jsencr(dbg.queued);
-			dbg.queued = [];
-			for(var i=0; i<dbg.cons.length; i++)(function(c){
-				process.nextTick(function(){ c.end(data); });
-			}(dbg.cons[i]));
+			dbg.queued = []; 
+			for(var i=0; i<dbg.cons.length; i++){
+				dbg.cons[i].writeHead(200,{
+					'Content-type':dbg.mimes['txt'],
+					'Content-length' : data.length,
+					'Cache-control':'no-cache'
+				});
+				
+				dbg.cons[i].write(data); 
+				dbg.cons[i].end("\r\n");
+				dbg.cons[i] = null;
+				dbg.cons.splice(i,1); 
+				i--; 
+				console.__log(i);
+			}
 		};
 		
 		dbg.pendingBroadcast = setTimeout(function(){ sendFn(); },dbg.broadcastLag);
@@ -102,19 +113,7 @@ var dbg = {
 				break;
 			
 			case 'sse': 
-				
 				var thiscon = dbg.cons.push(s);
-				q.on('end', function(){ process.nextTick(function(){
-					s.writeHead(200,{
-						'Content-type':'text/event-stream',
-						'Connection':'keep-alive',
-						'Cache-Control': 'no-cache'
-					});
-				}); });
-				
-				q.on('close', function(){ dbg.cons.splice(thiscon,1);});
-				s.socket.setTimeout(0);
-				
 				break;
 			
 			default:

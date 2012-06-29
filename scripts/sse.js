@@ -3,9 +3,9 @@ $(document).ready(function(){
 	var constat = $('.constat');
 	var conmsg = constat.find('.msg');
 	var conic = constat.find('.eicon');
-	var toReconnectOnFail = 3000;
+	var toReconnectOnFail = 2000;
 	var toReconnectOnSSE = 60;
-	var toLoggingInterval = 1000;
+	var toLoggingInterval = 500;
 	
 	var showOnline = function(state){
 		if(!!state)	{
@@ -21,13 +21,13 @@ $(document).ready(function(){
 	
 	var rq = {};
 	var reconnect = function(){
-		rq = $.ajax({url:'sse', type:"GET", dataType:'text', timeout:0, complete:function(r){
-			if(Number(r.status)!==200){
+		rq = $.ajax({url:'sse?x='+(new Date().getTime()),type:"GET", dataType:'text', timeout:0, complete:function(r){
+			
+			if(Number(r.status)!==200){ 
 				showOnline(false);
 				return setTimeout(function(){ reconnect(); }, toReconnectOnFail)
-			};
+			}
 			
-			setTimeout(function(){ reconnect(); }, toReconnectOnSSE);
 			try{ var q = JSON.parse(r.responseText); }
 			catch(e){ var q = []};
 			
@@ -46,6 +46,8 @@ $(document).ready(function(){
 						break;	
 				};	
 			}(q[j]));
+			
+			setTimeout(function(){ reconnect(); }, toReconnectOnSSE);
 		}});
 	};
 	
