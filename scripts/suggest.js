@@ -108,7 +108,8 @@ $(document).ready(function(){
 				var i = curpos.index(); 
 				if(i+1 >= lis.length) i=-1; i++; 
 				curpos.removeClass('sel'); 
-				$(lis.get(i)).addClass('sel');
+				var p = $(lis.get(i)).addClass('sel').position();
+				sugb.scrollTop(p.top);
 			}
 		}
 		else if(ISUP) { 
@@ -117,7 +118,8 @@ $(document).ready(function(){
 				var i = curpos.index();
 				if(i-1 < 0) i=lis.length; i--;
 				curpos.removeClass('sel');
-				$(lis.get(i)).addClass('sel');	
+				var p = $(lis.get(i)).addClass('sel').position();	
+				sugb.scrollTop(p.top);
 			}
 		}
 		

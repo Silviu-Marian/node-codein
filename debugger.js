@@ -58,7 +58,6 @@ var dbg = {
 				dbg.cons[i] = null;
 				dbg.cons.splice(i,1); 
 				i--; 
-				console.__log(i);
 			}
 		};
 		

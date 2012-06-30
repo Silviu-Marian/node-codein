@@ -85,6 +85,9 @@ $(document).ready(function(){
 						$.jstree._reference(this).open_node(this,false,false);
 					vwscr.refresh();
 				}).bind("dblclick.jstree", function (event) {
+					var how = $.cookie(NS+'dotstruct');
+					if(typeof(how)==null || (typeof(how)==='string' && how.toString()==='no')) return;
+					
 					var node = $(event.target).closest("li");
 					var sel = "> a > span.fn";
 					var address = node.find(sel).toArray().concat(node.parents('li').find(sel).toArray());
@@ -189,7 +192,7 @@ $(document).ready(function(){
 	var actiscr = function(){
 		var how = $.cookie(NS+'iscroll');
 		if(null==how || how.toString()!=='yes'){ 
-			iscr.removeClass('sel');  
+			iscr.removeClass('sel').text('Scrolling'); 
 			vwscr.disable();
 			vwscr = vwscr.destroy();
 			vwscr = dvwscr;
@@ -198,7 +201,7 @@ $(document).ready(function(){
 			vw.removeAttr('style');
 		}else{ 
 			$('#output_wrappr').scrollTop(0).scrollLeft(0);
-			iscr.addClass('sel'); 
+			iscr.addClass('sel').text('Panning'); ; 
 			vwscr = new iScroll('output_wrappr',{fadeScrollbar:1,hideScrollbar:1,wheelAction:'none'});
 			vwscrint = setInterval(function(){ vwscr.refresh(); }, 2000);
 		}

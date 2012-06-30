@@ -4,9 +4,9 @@
 
 <img src="https://github.com/ketamynx/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" /> 
 
-<h2>License &amp; disclaimer</h2>
-<p><b>License:</b> <a href="http://www.youtube.com/watch?v=8yR7LZxp-IU">http://www.youtube.com/watch?v=8yR7LZxp-IU</a><br />
-	<b>Disclaimer:</b> Said tool is only intended for dicking around,  and is thus unsuitable for enterprise-level operations; this program should not be used for reliable remote instrumentation or monitoring, or as a replacement for NodeJS's console system. This program cannot guide missiles out of North Korea.</p>
+<h2>License</h2>
+<p>Released under MIT License (included)</p>
+
 <h2>Minimum requirements</h2>
 <p>NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+, Win XP+</p>
 <h2>Deployment instructions</h2>
