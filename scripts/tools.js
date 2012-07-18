@@ -62,7 +62,7 @@ $(document).ready(function(){
 		}, false);
 	});
 		
-	$('.clear-console').click(function(){ return clearConsole();	});
+	$('.clear-console').click(function(){ clearConsole(); focusLastMessage(); });
 	$('.ui-resizable-n').on('dblclick', function(){ swa.click(); });
 	$('.reload').click(function(){ return window.location.reload(); });
 	
@@ -86,8 +86,18 @@ $(document).ready(function(){
 		actPreserve();
 	}); actPreserve();
 	
-	$('.expand-all').click(function(){ vw.find('.jstree-closed > .jstree-icon').click(); });
-	$('.collapse-all').click(function(){ vw.find('.jstree-open > .jstree-icon').click(); });
+	$('.expand-all').click(function(){ 
+		var acoll = vw.find('.arrow-collapsed');
+		while(acoll.length){
+			acoll.click();
+			acoll = vw.find('.arrow-collapsed');
+		};
+	});
+	$('.collapse-all').click(function(){ 
+		vw.find('.arrow-expanded').click(); 
+		vw.find('.expandable > .object').remove(); 
+		focusLastMessage();
+	});
 	
 	t_sw.click(function(){
 		$.cookie(NS+'theme', $(this).is('.t_dark_ui') ? 'dark': 'light', {expires:30});

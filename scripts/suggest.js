@@ -61,7 +61,7 @@ $(document).ready(function(){
 		
 		for(var i =0; i<data.length; i++)(function(){
 			var el = $("<li />");
-			el.text(data[i]); if(i==0) el.addClass('sel');
+			el.text(data[i]); // if(i==0) el.addClass('sel');
 			el.attr('ins', data[i].replace(part,''));
 			el.click(function(){ insertVal($(this).attr('ins')); });
 			el.appendTo(ul);
@@ -99,7 +99,7 @@ $(document).ready(function(){
 		var lis = sugb.find('li');
 		var curpos = lis.filter('.sel'); 
 		if(ISENT){ 
-			if(!curpos.length) return; 
+			if(!curpos.length) return hideSug();
 			curpos.trigger('click');
 		}
 		else if(ISDW){ 

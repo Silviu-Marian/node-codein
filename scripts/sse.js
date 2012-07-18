@@ -1,5 +1,5 @@
-$(document).ready(function(){
-	
+$(document).ready(function(){ setTimeout(function(){
+		
 	var constat = $('.constat');
 	var conmsg = constat.find('.msg');
 	var conic = constat.find('.eicon');
@@ -56,5 +56,5 @@ $(document).ready(function(){
 	},toLoggingInterval);
 	
 	reconnect();
-});
+}, 1000); });
 

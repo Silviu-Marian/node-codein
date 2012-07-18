@@ -5,10 +5,11 @@
 <img src="https://github.com/ketamynx/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" /> 
 
 <h2>License</h2>
-<p>Released under MIT License (included)</p>
+<p>Released under MIT License (included); some components have their own licenses but I kept all the comments in their headers so if you're a really really boring person (lawyer, attorney, prosecutor, whatever) you can check the files under libraries/.</p>
 
-<h2>Minimum requirements</h2>
-<p>NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+, Win XP+</p>
+<h2>Requirements</h2>
+<p>Recommended: NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+ <br />
+	Minimum: any OS that supports a browser that supports javascript (my Nokia N8 almost worked lol)</p>
 <h2>Deployment instructions</h2>
 <ol>
 	<li>Install the package via <b>&quot;npm install node-codein&quot;<b>, then include it in your script with require(&quot;node-codein&quot;); alternatively</li>
@@ -20,9 +21,18 @@
 	<li>Make sure you only use Chrome. It might work on something else but going straight with Chrome will save you time.</li>
 </ol>
 
+<h2>Changelog</h2>
+<ul>
+	<li> <b>v1.0.1</b> <br /><ul>
+		<li> removed the buggy, CPU-clogging jsTree</li>
+		<li> updated UI colors </li>
+		<li> modified small real-estate features </li>
+		<li> added progressive rendering </li>
+		<li> exposed the whole module on <b>global.nodecodein</b> </li>
+	</ul> </li>	
+</ul>
 
 <h2>Main features</h2>
-
 <ul>
 	<li>Displays objects in tree format, with expand/collapse controls</li>
 	<li>Executes arbitrary code</li>
@@ -67,33 +77,34 @@
 		<ul>
 			<li>saves last 50 command in local storage, use arrow keys to navigate through previous commands</li>
 			<li>typing suggestions and autocomplete</li>
-			<li>double-click a property name in the message window to insert it</li>
-			<li>shit+enter for new lines			</li>
+			<li>shift+enter for new lines </li>
 			<li>tab key indents</li>
 		</ul>
 	</li>
 </ul>
 
-<h2>Known bugs</h2>
-<p>Lots of them. Because I had to took a day off from work to build this, so there's was no time to organize nor bughunt.</p>
-
+<h2>Known limitations</h2>
 <ul>
-	<li>Console  log may not pass through every now and again or so. I planned on using EventSource but it wasn't working (maybe buffering instead of flushing, I don't know, can't WireShark locally). So what it does is it keeps connections in a waiting state and when it gets something, it writes and closes those connections. Then clients are supposed to connect back. </li>
+	<li>Console log sometimes doesn't pass data (rarely... very... rarely). I planned on using EventSource but didn't stick to it because one end doesn't buffer the response and there's no flush command like in PHP. So what it does instead is it keeps connections in a waiting state and when it gets something, it writes the response, closing those connections. Then clients will automatically reconnect but in that split-second if there is any pre-connected client (as in managed to connect before any others), that client will get the logs and those who connected the millisecond later, won't get anything. </li>
 	<li>Autocomplete spams your server. Lag is in place and can be tweaked but it'll basically chop-off words when you hit enter.</li>
 	<li>iScroll + expand all + ctrl+f to find properties will lock the whole browser; not sure why, don't care much, just disable iScroll if you're using this tecnhique to find properties.</li>
-	<li>Autocomplete may not appear after using left / right arrow keys or escape. This is intentional, those 3 keys are GTFO master keys, but if you want the list of suggestions back, type some gibberish and press backspace.</li>
-	<li>The whole source code is haywired.</li>
+	<li>Autocomplete may not appear after using left / right arrow keys or escape. This is intentional, because those 3 keys are GTFO master keys, but if you want the list of suggestions back, type some gibberish and press backspace.</li>
+	<li>The whole source code is haywired or almost haywired.</li>
+	<li>There's no syntax highlighting on the input. It will generate lags.</li>
 </ul>
 
 <h2>FAQ</h2>
-<ul><li><b>What's wrong about the regular console?</b><br />
-	Its overall buffer size, no syntax coloring, hard to use, no direct input, so forth. If you're familar to webkit's &quot;Inspect Element&quot; console tab, you'll see the differences.</li>
+<ul><li><b>Where are the variables from my own module? / How do I debug my module?</b><br />
+		This console normally doesn't see them, as it doesn't see scoped (private) variables. Take it as a javascript security feature. But you can always assign them to an object (like "module") and make that object global. (module.variable = ...; global.MyModule = module)
+	</li>
+	<li><b>What's wrong about the regular console?</b><br />
+	Its overall buffer size, no syntax coloring, hard to use, no direct input, so forth. If you're familar to webkit's &quot;Inspect Element&quot; console tab, you'll see there are some differences.</li>
 	<li><b>Then what's wrong with Eclipse's V8 Debugger?</b><br /> 
 		A debugger is something totally different. Well not really but you still need to set breakpoints, stop executions, scope variables, etc. Plus you have to restart Node to put code in. I can make more excuses if necessary.	</li>
 	<li><b>Why not just fix node-inspector?</b><br />
-		I tried. I first tried to pass back stringified objects and decode them in the local console. The problem was that there was a hardcoded limit of 80 characters beyond which the string turned into &quot;str... (length: 2219)&quot;. I'm not sure where this came from but I believe it was built into v8 when it was compiled with Node. I also tried fixing the 0:0:0 (context:scope:handle) but it seemed to pass back blank values no matter what. I didn't had time for that.</li>
+		I tried. I first tried to pass back stringified objects and decode them in the local console. The problem was that there was a hardcoded limit of 80 characters beyond which the string turned into &quot;str... (length: 2219)&quot;. I'm not sure where this came from but I believe it was built into v8 when it was compiled with Node. I also tried fixing scope:frame:handle problem but it seemed to pass back zeros no matter what. </li>
 	<li><b>Can you help me do X / can you add X / can you fix X?</b><br />
-		I'll do everything that doesn't take more than 5 minutes to do. I'm really in a time crisis, but even if I wasn't, I'm highly capitalistic about all my work. </li>
+		Open an issue here on GitHub, 3rd row, 4th button (or something like that), and let's have a look</li>
 </ul>
 
 <hr />

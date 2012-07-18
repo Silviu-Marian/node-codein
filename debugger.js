@@ -2,8 +2,10 @@ var file_exists = function(f){ try{ require('fs').lstatSync(f); return true; }ca
 var is_file = function(f){ try{ return require('fs').lstatSync(f).isFile(); }catch(e){ return false; } }; 
 var file_get_contents = function(f,mode){return (!file_exists(f))? '' : require('fs').readFileSync(f, mode); };
 var get_constr = function(v){ return(v===null)?"[object Null]":Object.prototype.toString.call(v); }; 
+// var fnprefix = (["FUNCTION"].concat(process.hrtime()).concat(process.hrtime())).join('.'); // ONLY WORKS IN LATER Vs
+var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime()); 
 var jsencr = function(o){ var e = []; return JSON.stringify(o, function(k,v){
-	if(typeof(v)==='function') return v.toString();
+	if(typeof(v)==='function') return fnprefix+v.toString();
 	if(typeof(v)!=='object' || v===null)	return v;
 	for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
 	e.push(v); return v;
@@ -112,6 +114,7 @@ var dbg = {
 				break;
 			
 			case 'sse': 
+				q.socket.setTimeout(0);
 				var thiscon = dbg.cons.push(s);
 				break;
 			
@@ -134,22 +137,25 @@ var dbg = {
 	
 	// EXECUTE COMMANDS
 	execute: function(q,s){
-		var b = '';
-		q.on('data', function(c){ b+=c; });
+		var post = '';
+		q.on('data', function(c){ post+=c; });
 		q.on('end', function(){
-			b = require('querystring').parse(b);
-			if(typeof(b.command)==='string'){ 
+			post = require('querystring').parse(post);
+			if(typeof(post.command)==='string'){ 
 				var r = {error:false};
 				
 				try{
-					r.cnt = eval(b.command);
-					r.type = (typeof(r.cnt)==='object' && r.cnt!==null) ? get_constr(r.cnt) : typeof(r.cnt);
+					r.fnprefix = fnprefix;
+					r.cnt = eval.apply(global, [post.command]);
+					r.type = (typeof(r.cnt)==='object' && r.cnt!==null) ? 
+						get_constr(r.cnt) : 
+						typeof(r.cnt);
 				}catch(e){ r.error=e.toString(); }
 					
 				s.end(jsencr(r));
-			} else if(typeof(b.getsug)==='string'){
+			} else if(typeof(post.getsug)==='string'){
 				
-				try{ var r = jsencr(dbg.getsug(JSON.parse(b.getsug)));	}
+				try{ var r = jsencr(dbg.getsug(JSON.parse(post.getsug)));	}
 				catch(e){ var r = "[]"; }
 				
 				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
@@ -173,15 +179,15 @@ var dbg = {
 		var r = [];
 		if(typeof(o)!=='object' || !o.length || o.length!=2) return r;
 		if(typeof(o[0])!=='string' || o[0]===''){
-			if(typeof(module)=='object') for(var i in module){
+			/* if(typeof(module)=='object') for(var i in module){
 				if(o[1]===''){ r.push(i); continue; };
 				if(i.split(o[1])[0]==='') r.push(i);
-			}
+			}; */
 			
 			for(var i in global){
 				if(o[1]===''){ r.push(i); continue; };
 				if(i.split(o[1])[0]==='') r.push(i);
-			}				
+			}; 				
 		}else{try{
 			var tgt = eval(o[0]); if(typeof(tgt)!=='object') return r;
 			for(var i in tgt){
@@ -206,8 +212,8 @@ var dbg = {
 		console.__error = console.error;
 		console.error = function(){ console.__error.apply(console, arguments); dbg.broadcastSSE('error', arguments);};
 		
-		process.on('uncaughtException', function (e) {console.error.call(console, e.toString()); });
-		
+		process.on('uncaughtException', function (e) {console.error.call(console, e + ""); });
+		global.nodecodein = module;
 	},
 	
 	// LOCAL DEBUGGER SERVER
@@ -230,7 +236,7 @@ var dbg = {
 		});
 		
 		dbg.consolewrap();
-		process.on('exit', function(){ try{dbg.sv.close();}catch(e){}; });
+		process.on('exit', function(){ console.log('Closing debug server'); try{dbg.sv.close();}catch(e){}; });
 	}
 	
 };

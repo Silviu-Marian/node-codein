@@ -1,38 +1,58 @@
-body, html{ background:#333; }
+/* 
+
+$base00:    #999999;
+$base01:    #666666; // #666666
+$base02:    #4a4a4a; // #4a4a4a
+$base03:    #252525; // #111333
+
+ */
+
+/* UI */
+
+body, html, #wrap, textarea, input{background:#252525; color:#ffffff;}
 .tool, .ui-resizable-n{
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#555), color-stop(100%,#333));
-	background: -webkit-linear-gradient(top,  #555 0%,#333 100%);
-	background: -o-linear-gradient(top,  #555 0%,#333 100%);
-	background: -moz-linear-gradient(top,  #555 0%,#333 100%);
-	background: linear-gradient(top,  #555 0%,#333 100%);
-	border-top:solid 1px #888; border-bottom:solid 1px #666;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4a4a4a), color-stop(100%,#252525));
+	background: -webkit-linear-gradient(top,  #4a4a4a 0%,#252525 100%);
+	background: -o-linear-gradient(top,  #4a4a4a 0%,#252525 100%);
+	background: -moz-linear-gradient(top,  #4a4a4a 0%,#252525 100%);
+	background: linear-gradient(top,  #4a4a4a 0%,#252525 100%);
+	border-top:solid 1px #252525; border-bottom:solid 1px #666666;
 }
+.ui-resizable-n{border-top:solid 1px #666666; }
+.tool-bottom{border-top:solid 1px #666666; border-bottom:solid 1px #666666}
+.cli{ border-top:solid 1px #4a4a4a;} 
 
-#wrap{ background:#222;}
-html, body, .jstree a, #command, .tool b a, .tool > a.nosel, .tool > a.nosel:hover{ color:#aaa !important; }
-::selection{ background:#444; }
-
-.jstree-classic{ background:none !important;}
-.jstree-classic .jstree-hovered, .suggestions li.sel, .suggestions li:hover{ background:#444 !important; border-color:#444 !important;}
-
-.cli { border-top:solid 1px #444; }
-
-.tool b{ border-right-color:#000; box-shadow: 1px 0px 0px #666; }
-.tool b.r{ border-left-color:#000; box-shadow: -1px 0px 0px #666; }
-
-.tool b {text-shadow:none !important;}
-.tool b{ text-shadow:0 -1px 0px #000 !important;}
-.tool b:active, .tool b:focus{ background:#222;}
-
-.tool > a{ color:#888; margin:3px 5px; padding:3px 8px 5px 8px; text-shadow:0px 1px 0px #fff; border-top:solid 1px transparent; border-bottom:none !important;}
-.tool > a:hover, .tool > a.sel, .tool > a:active, .tool > a:focus{ color:#fff; text-shadow:0px 1px 0px #000; background:#777; border-top-color:#000;}
-.tool > a:active, .tool > a:focus{ background:#555 !important; }
-.tool > a:hover{ background:#666; }
-
-.tool > a{ text-shadow:0 -1px 0 #000 !important;}
+/* commands and data types */
 
 
-.nodots .jstree-hovered{ background:none !important; }
-.nodots .jstree-hovered{ border-color:transparent !important;}
 
-.suggestions{ background:#111; border-color:#555;}
+.object .header:hover { background:#4a4a4a; }
+
+.nodots .object{ border-color:transparent; }
+.nodots .object .header:hover{ background:none;}
+
+/* toolbar buttons */
+
+.tool b{text-shadow:none; text-shadow:0px -1px 0px #252525 !important; border-right:solid 1px #666666;  -webkit-box-shadow: 1px 0px 0px #252525; -moz-box-shadow: 1px 0px 0px #252525; box-shadow: 1px 0px 0px #252525; }
+.tool b:active, .tool b:focus{ background:#666666; }
+.tool b.r{border-left:solid 1px #666666; -webkit-box-shadow: -1px 0px 0px #252525; -moz-box-shadow: -1px 0px 0px #252525; box-shadow: -1px 0px 0px #252525; border-right:none;}
+.tool b.sel{color:#268bd2;}
+.tool b, .tool b >a{color:#999999;}
+
+/* toolbar text controls */
+.tool > a{color:#999999; text-shadow:none; text-shadow:0px -1px 0px #252525; border-bottom:none !important; border-top:solid 1px transparent; top:-2px; position:relative;}
+.tool > a:hover, .tool > a.sel, .tool > a:active, .tool > a:focus{
+	color:#252525; text-shadow:0px 1px 0px #666666; background:#666666; border-top-color:#252525;
+}
+.tool > a:hover{ background:#666666; }
+.tool > a:active, .tool > a:focus{ background:#666666; }
+.tool > a.nosel, .tool > a.nosel:hover,.tool > a.nosel:active,.tool > a.nosel:focus{ background:none !important; border-color:transparent !important; color:#999999; text-shadow:none; }
+
+/* suggestions */
+.suggestions{background:#252525; border:solid 1px #666666;}
+.suggestions li.sel, .suggestions li:hover{background:#4a4a4a; border-color:4a4a4a; }
+
+/* those are invisible */
+.poslin{ background:#c00}
+#sugpos{ background:#cfc; } 
+
