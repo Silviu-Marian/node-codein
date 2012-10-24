@@ -6,7 +6,7 @@ window.formatStaticValue = function(data, nobrk){
 	
 	if(type==='object') return false;
 	if(data===null) type='null';
-	if(type==='string' && data.indexOf(fnprefix+'function')===0 && data.lastIndexOf(fnprefix+'function')===0){
+	if(type==='string' && typeof fnprefix !== 'undefined' && data.indexOf(fnprefix+'function')===0 && data.lastIndexOf(fnprefix+'function')===0){
 		type='function';
 		data = data.replace(fnprefix,'');
 	}
