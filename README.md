@@ -23,6 +23,10 @@
 
 <h2>Changelog</h2>
 <ul>
+	<li> <b>v1.0.2</b> <br /><ul>
+		<li> fixed a bug on prefixed function content strings (thanks Evangenieur)</li>
+		<li> replaced iScroller with dragScrollable (less fancier but works on latest Chrome)</li>
+	</ul> </li>	
 	<li> <b>v1.0.1</b> <br /><ul>
 		<li> removed the buggy, CPU-clogging jsTree</li>
 		<li> updated UI colors </li>
