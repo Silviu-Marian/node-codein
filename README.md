@@ -91,7 +91,7 @@
 <ul>
 	<li>Console log sometimes doesn't pass data (rarely... very... rarely). I planned on using EventSource but didn't stick to it because one end doesn't buffer the response and there's no flush command like in PHP. So what it does instead is it keeps connections in a waiting state and when it gets something, it writes the response, closing those connections. Then clients will automatically reconnect but in that split-second if there is any pre-connected client (as in managed to connect before any others), that client will get the logs and those who connected the millisecond later, won't get anything. </li>
 	<li>Autocomplete spams your server. Lag is in place and can be tweaked but it'll basically chop-off words when you hit enter.</li>
-	<li><s>iScroll + expand all + ctrl+f to find properties will lock the whole browser; not sure why, don't care much, just disable iScroll if you're using this tecnhique to find properties.</s> [fixed as of 1.0.2]</li>
+	<li>~~iScroll + expand all + ctrl+f to find properties will lock the whole browser; not sure why, don't care much, just disable iScroll if you're using this tecnhique to find properties.~~ [fixed as of 1.0.2]</li>
 	<li>Autocomplete may not appear after using left / right arrow keys or escape. This is intentional, because those 3 keys are GTFO master keys, but if you want the list of suggestions back, type some gibberish and press backspace.</li>
 	<li>The whole source code is haywired or almost haywired.</li>
 	<li>There's no syntax highlighting on the input. It will generate lags.</li>
