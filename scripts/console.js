@@ -9,12 +9,7 @@ $(document).ready(function(){
 	var c = $('#command');
 	var vw = $('#output_viewer');
 	var vwr = $('#output_wrappr');
-	
-	var dvwscr = {
-		refresh:function(){}, destroy:function(){ return null; }, disable:function(){},
-		scrollTo:function(x,y){ vwr.scrollTop(Math.abs(y)); vwr.scrollLeft(Math.abs(x)); }};
-	var vwscr = dvwscr;
-	var vwscrint = 0;
+	var vwscr = {scrollTo:function(x,y){ vwr.scrollTop(Math.abs(y)); vwr.scrollLeft(Math.abs(x)); }};
 	
 	var encd = function(v){ return $('<div />').text(v).html();};
 	var decd = function(v){ return $('<div />').html(v).text();};
@@ -36,16 +31,7 @@ $(document).ready(function(){
 		return r;
 	};
 	
-	window.focusLastMessage = function(){
-		vwscr.refresh();
-		if(vwscr==dvwscr){
-			vwscr.scrollTo(0,vw.height());
-		}else{
-			vwscr.stop();
-			var tgth = (-1 * vw.height() + vwr.height() ); tgth = tgth>0 ? 0 : tgth;
-			$(vw).attr('style', '-webkit-transform: translate3d(0px, '+(tgth)+'px, 0px) scale(1);');
-		};
-	};
+	window.focusLastMessage = function(){ vwscr.scrollTo(0,vw.height()); };
 	
 	window.showAnError = function(err, type){ 
 		if(typeof(type)!=='string') type='error';
@@ -131,7 +117,6 @@ $(document).ready(function(){
 		
 		$('#formwrap').height(nsr);
 		$('#output_wrappr').height( $('#wrap').height()-nsr );
-		vwscr.refresh();
 	};
 	window.onresize = function(){ doResizeWin(); };
 	doResizeWin();
@@ -145,18 +130,16 @@ $(document).ready(function(){
 	var actiscr = function(){
 		var how = $.cookie(NS+'iscroll');
 		if(null==how || how.toString()!=='yes'){ 
+			$('#output_wrappr').removeClass('dragscrollable');
 			iscr.removeClass('sel').text('Scrolling'); 
-			vwscr.disable();
-			vwscr = vwscr.destroy();
-			vwscr = dvwscr;
-			clearInterval(vwscrint);
 			$('#output_wrappr').css({'overflow': 'auto'});
-			vw.removeAttr('style');
+			$('#output_wrappr').unbind();
+			$('#output_viewer').unbind();
 		}else{ 
-			$('#output_wrappr').scrollTop(0).scrollLeft(0);
+			$('#output_wrappr').addClass('dragscrollable');
 			iscr.addClass('sel').text('Panning'); ; 
-			vwscr=new iScroll('output_wrappr',{fadeScrollbar:1,hideScrollbar:1,wheelAction:'none'});
-			vwscrint = setInterval(function(){ vwscr.refresh(); }, 2000);
+			$('#output_wrappr').css({'overflow': 'hidden'});
+			$('#output_wrappr').dragscrollable({dragSelector: '#output_viewer', acceptPropagatedEvent: true});
 		}
 	};
 	iscr.click(function(){
