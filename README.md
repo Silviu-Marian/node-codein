@@ -23,6 +23,9 @@
 
 <h2>Changelog</h2>
 <ul>
+	<li><b>v1.0.3</b><br /><ul>
+		<li>fixed incompatibility issues with expressjs and locomotive; special thanks to <a href="http://frantzmiccoli.com/" target="_blank">Fräntz Miccoli</a></li>
+	</ul></li>
 	<li> <b>v1.0.2</b> <br /><ul>
 		<li> fixed a bug on prefixed function content strings (thanks Evangenieur)</li>
 		<li> replaced iScroller with dragScrollable (less fancier but works on latest Chrome)</li>
