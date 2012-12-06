@@ -3,7 +3,7 @@
   "name": "node-codein",
   "description": "NodeJS Console Object Debug Inspector",
   "keywords": ["console","inspect","inspector","object","tree","outline","viewer","debug","debugger","webkit","runtime","eval"],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "homepage": "https://github.com/ketamynx/node-codein",
   "repository": {
     "type": "git",
