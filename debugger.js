@@ -3,8 +3,9 @@ var is_file = function(f){ try{ return require('fs').lstatSync(f).isFile(); }cat
 var file_get_contents = function(f,mode){return (!file_exists(f))? '' : require('fs').readFileSync(f, mode); };
 var get_constr = function(v){ return(v===null)?"[object Null]":Object.prototype.toString.call(v); }; 
 // var fnprefix = (["FUNCTION"].concat(process.hrtime()).concat(process.hrtime())).join('.'); // ONLY WORKS IN LATER Vs
-var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime()); 
-var jsencr = function(o){ var e = []; return JSON.stringify(o, function(k,v){
+var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime());
+var stringify = require('./stringify.js'); 
+var jsencr = function(o){ var e = []; return stringify(o, function(k,v){
 	if(typeof(v)==='function') return fnprefix+v.toString();
 	if(typeof(v)!=='object' || v===null)	return v;
 	for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
