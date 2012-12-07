@@ -37,8 +37,12 @@ span.fn{ display:inline-block; width:180px; text-overflow:ellipsis; white-space:
 .ui-resizable-n{ height:3px;position:absolute; top:0px;left:0px; width:100%; cursor:n-resize}
 .ui-resizable-n:active, .ui-resizable-n:focus{ cursor:row-resize !important;}
 
-.tool b, .tool b *, .eicon{font-family:"symb","Lucida Sans Unicode", "Lucida Grande", sans-serif; text-decoration:none; }
-.tool b {float:left; display:block; line-height:30px; height:30px; width:30px; font-weight:normal; font-size:16px; text-align:center; cursor:pointer;} 
+.tool b, .tool b *, .eicon {font-family:"symb","Lucida Sans Unicode", "Lucida Grande", sans-serif; text-decoration:none; }
+.tool b, .tool b * {float:left; display:block; line-height:30px; height:30px; width:30px; font-weight:normal; font-size:16px; text-align:center; cursor:pointer;}
+.eicon {margin-right: 5px; margin-left: 5px; line-height:20px; height:20px; width:20px; font-weight:normal; font-size:15px; text-align:center;}
+.skipped .eicon.replay {cursor:pointer;}
+.tool b div {position: absolute; height: 30px; width: 30px; cursor:pointer;}
+
 
 .tool b.r{ float:right;  }
 .tool b small{ font-size:12px; }
@@ -53,10 +57,9 @@ span.fn{ display:inline-block; width:180px; text-overflow:ellipsis; white-space:
 .tool > b{ position:relative;}
 .tool > b > a{ position:absolute; display:block; top:0px; left:0px; right:0px; bottom:0px; }
 
-.eicon{ font-size:10px; }
 .jstree-closed, .jstree-open, .jstree-closed *, .jstree-open *{ cursor:default;}
 
-.rc10, .tool a, .tool a.nosel .eicon{ -moz-border-radius:10px; -webkit-border-radius:10px; -khtml-border-radius:10px; border-radius:10px }
+.rc10, .tool a, .tool a.nosel .eicon{position: relative; -moz-border-radius:10px; -webkit-border-radius:10px; -khtml-border-radius:10px; border-radius:10px; top: -3px };
 .suggestions, .rc4{-moz-border-radius:4px; -webkit-border-radius:4px; -khtml-border-radius:4px; border-radius:4px }
 
 .suggestions{ position:absolute; display:block; max-height:100%; overflow:hidden; padding:0 5px; min-width:200px; margin:-5px 0 -1px 10px;  z-index:1001;}
