@@ -14,11 +14,7 @@ $(document).ready(function(){
 	var encd = function(v){ return $('<div />').text(v).html();};
 	var decd = function(v){ return $('<div />').html(v).text();};
 	
-	window.clearConsole = function(){
-	    resetSkippedResponses(); 
-	    c.val('');
-	    return vw.html('');
-    };
+	window.clearConsole = function(){ c.val(''); return vw.html('');};
 		
 	var treefiy_obj = function(o, n, c){
 		var r = { data:"<span class='fn' title='"+n+"'>"+n+"</span>",  state:!!c ? 'open' : 'closed', children:[] };
@@ -45,83 +41,21 @@ $(document).ready(function(){
 		focusLastMessage();
 	};
 	
-    var skippedResponses = [];
-	
-	var skippedResponsesCount = function() {
-	    return skippedResponses.length;
-	};
-	
-	var addSkippedResponse = function(r) {
-	    skippedResponses.push(r);
-	    // maybe a check should be performed on the size of skipped response
-	    // here if we want to limit its size
-	};
-	
-	var resetSkippedResponses = function() {
-	    if (skippedResponses.length > 0) {
-	        skippedResponses = [];
-    	    resetSkippedBeforeNextAdd = false;
-    	    removeSkippedReplayIcon();
-	    }
-	};
-	
-	var displaySkippedResponses = function() {
-	    for (var i = 0; i < skippedResponsesCount(); i++) {
-	        showAServerResponse(skippedResponses[i]);
-	    }
-	    resetSkippedResponses();
-	};
-	
-	var removeSkippedReplayIcon = function() {
-	    $('.replay', vw).remove();
-	}
-	
-	var showAServerResponse = function(r) {
-	    var resp = $('<div class="output"></div>').appendTo(vw);
-        var tpo = typeof(r.cnt); 
-        if(typeof(r.fnprefix)==='string') window.fnprefix = r.fnprefix; 
-        if(r.cnt===null) tpo = 'null';
-            
-        switch(tpo){
-            case 'object':
-                createTreeFromObj({'[object Object]':r.cnt}, $('.autoexpand').is('.sel')).appendTo(resp);
-                break;
-            default:
-                $(formatStaticValue(r.cnt,false)).appendTo(resp);
-                break;
-        }; 
-        focusLastMessage();
-	};
-	
-	var showAHiddenServerResponse = function(r) {
-	    addSkippedResponse(r);
-	    var hiddenServerResponseClass = 'skipped',
-	        lastMessage = vw.find('.output:last'),
-	        text = 'Warning: message skipped ('+skippedResponsesCount()+')',
-            resp;
-	    if (lastMessage.hasClass(hiddenServerResponseClass)) {
-	        resp = lastMessage;
-	    } else {
-	        var replayIcon = $('<b class="replay eicon">*</b>');
-	        var warningIcon = $('<span class="eicon">W</span>');
-            replayIcon.click(function() {
-                displaySkippedResponses();
-            });
-	        resp = $('<div class="warning output '+hiddenServerResponseClass+'"><span class="text-container"></span</div>').appendTo(vw);
-	        resp.append(replayIcon);
-	        resp.prepend(warningIcon);
-	    }
-        resp.find('.text-container').text(text);
-	};
-	
 	window.showAResponse = function(r){ 
-		var running = $.cookie(NS+'running');
-		if (typeof(running) === 'undefined' || running === null || running === "yes") {
-		    resetSkippedResponses();
-		    showAServerResponse(r);
-		} else {
-		    showAHiddenServerResponse(r);
-		}
+		var resp = $('<div class="output"></div>').appendTo(vw);
+		var tpo = typeof(r.cnt); 
+		if(typeof(r.fnprefix)==='string') window.fnprefix = r.fnprefix; 
+		if(r.cnt===null) tpo = 'null';
+			
+		switch(tpo){
+			case 'object':
+				createTreeFromObj({'[object Object]':r.cnt}, $('.autoexpand').is('.sel')).appendTo(resp);
+				break;
+			default:
+				$(formatStaticValue(r.cnt,false)).appendTo(resp);
+				break;
+		}; 
+		focusLastMessage();
 	};
 	
 	var doRequestForm = function(){
@@ -169,9 +103,8 @@ $(document).ready(function(){
 	// RESIZING CONTAINER AREA
 	$('#formwrap').resizable({ handles:"n", minHeight:nsr_min, maxHeight:nsr_max }).resize(function(){
 		// $(this).css({cursor:'row-resize'});
-		//$('#output_wrappr').height( $('#wrap').height()-$(this).height() );
+		$('#output_wrappr').height( $('#wrap').height()-$(this).height() );
 		$.cookie(NS+'sizearea', $(this).height(), {expires: 30});
-		window.doResizeWin();
 	}).on('resizestop', function(){
 		// $(this).css({cursor:'n-resize'});
 	});
@@ -184,7 +117,6 @@ $(document).ready(function(){
 		
 		$('#formwrap').height(nsr);
 		$('#output_wrappr').height( $('#wrap').height()-nsr );
-		
 	};
 	window.onresize = function(){ doResizeWin(); };
 	doResizeWin();

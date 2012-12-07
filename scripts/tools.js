@@ -4,7 +4,6 @@ $(document).ready(function(){
 	var autoexp = $('.autoexpand');
 	var dotstruct = $('.dotstruct');
 	var preserve = $('.preserve');
-	var running = $('.running');
 	var t_sw = $('.t_dark_ui, .t_light_ui');
 	
 	var vw = $('#output_viewer');
@@ -14,17 +13,13 @@ $(document).ready(function(){
 		
 		if(null==how || how.toString()!=='hidden'){
 			swa.addClass('sel');
-			$('#formwrap').show().removeClass('h');
-			window.doResizeWin();
+			$('#formwrap').show().removeClass('h'); doResizeWin();
 			$('#command').focus();
+			
 		}else{
 			swa.removeClass('sel');
-			$('#formwrap').hide('fast', function(){
-			     $(this).addClass('h');
-			     window.doResizeWin();
-            });
+			$('#formwrap').hide('fast', function(){ $(this).addClass('h'); doResizeWin(); });
 		}
-		
 	};
 	
 	var actAutoExpand = function(){
@@ -43,22 +38,6 @@ $(document).ready(function(){
 		var how = $.cookie(NS+'preserve');
 		if(null==how || how.toString()!=='yes'){preserve.removeClass('sel').text('w'); }
 		else{ preserve.addClass('sel').text('x');};
-	}
-	
-	var actRunning = function(){
-	    var how = $.cookie(NS+'running');
-	    if(null==how || how.toString()!=='no'){running.addClass('sel'); }
-	    else{ running.removeClass('sel')};
-	}
-	
-	var animateRunning = function(){
-	    var currentValue = parseInt(running.find('span').text()),
-	        how = $.cookie(NS+'running');
-        if(null==how || how.toString()!=='no') {
-            var newValue = (currentValue + 1) % 8;
-            running.find('span').text(newValue);
-        }
-        setTimeout(animateRunning, 100);
 	}
 	
 	var actTheme = function(){
@@ -106,11 +85,6 @@ $(document).ready(function(){
 		$.cookie(NS+'preserve', $(this).is('.sel') ? 'no': 'yes', {expires:30});
 		actPreserve();
 	}); actPreserve();
-	
-	running.click(function(){
-        $.cookie(NS+'running', $(this).is('.sel') ? 'no': 'yes', {expires:30});
-        actRunning();
-    }); actRunning(); animateRunning();
 	
 	$('.expand-all').click(function(){ 
 		var acoll = vw.find('.arrow-collapsed');
