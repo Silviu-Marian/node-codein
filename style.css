@@ -59,7 +59,7 @@ span.fn{ display:inline-block; width:180px; text-overflow:ellipsis; white-space:
 
 .jstree-closed, .jstree-open, .jstree-closed *, .jstree-open *{ cursor:default;}
 
-.rc10, .tool a, .tool a.nosel .eicon{position: relative; -moz-border-radius:10px; -webkit-border-radius:10px; -khtml-border-radius:10px; border-radius:10px; top: -3px };
+.rc10, .tool a, .tool a.nosel .eicon{position: relative; -moz-border-radius:10px; -webkit-border-radius:10px; -khtml-border-radius:10px; border-radius:10px; top: -3px}
 .suggestions, .rc4{-moz-border-radius:4px; -webkit-border-radius:4px; -khtml-border-radius:4px; border-radius:4px }
 
 .suggestions{ position:absolute; display:block; max-height:100%; overflow:hidden; padding:0 5px; min-width:200px; margin:-5px 0 -1px 10px;  z-index:1001;}
