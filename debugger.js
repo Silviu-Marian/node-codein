@@ -237,9 +237,19 @@ var dbg = {
 		});
 		
 		dbg.consolewrap();
-		process.on('exit', function(){ console.log('Closing debug server'); try{dbg.sv.close();}catch(e){}; });
+		
+		// free the port, on all ways of exiting the app
+		var events = ['exit','uncaughtException','SIGTERM','SIGKILL'];
+		for (var i in events){
+			process.on(i, function(){ dbg.stopproc(); });
+		}
+	},
+	stopproc: function(){
+		
+		console.log('Closing debug server'); 
+		try{dbg.sv.close();}catch(e){};
+		
 	}
-	
 };
 
 dbg.start();
