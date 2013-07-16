@@ -23,6 +23,9 @@
 
 <h2>Changelog</h2>
 <ul>
+	<li><b>v1.0.5</b><br /><ul>
+		<li>Added listeners to unbind the server on app crash (unhandledException, SIGTERM, SIGKILL)</a></li>
+		
 	<li><b>v1.0.3</b><br /><ul>
 		<li>fixed incompatibility issues with expressjs and locomotive; special thanks to <a href="http://frantzmiccoli.com/" target="_blank">Fräntz Miccoli</a></li>
 	</ul></li>
