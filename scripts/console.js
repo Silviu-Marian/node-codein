@@ -14,6 +14,16 @@ $(document).ready(function(){
 	var encd = function(v){ return $('<div />').text(v).html();};
 	var decd = function(v){ return $('<div />').html(v).text();};
 	
+	window.encodeHTML = function(s) {
+		s = s.replace(/&/g, '&amp;');
+		s = s.replace(/</g, '&lt;');
+		s = s.replace(/"/g, '&quot;');
+		s = s.replace(/(\r\n|\n|\r)/gm, '<br>');
+		s = s.replace(/ /g, '&nbsp;');
+		s = s.replace(/\t/g, '&emsp;'); // not exactly...
+		return s;
+	}
+	
 	window.clearConsole = function() {
 		$.ajax({url:'./', type:'POST', dataType:'text', data:{'clear':true}, complete:function(r) {
 			if(r.status!==200) return showAnError('Bad response from server ('+r.status+')');
@@ -27,7 +37,7 @@ $(document).ready(function(){
 	window.showAnError = function(err, type){ 
 		if(typeof(type)!=='string') type='error';
 		var resp = $('<div class="'+type+' output"> </div>').appendTo(vw);
-		resp.html(' <span class="eicon">W</span> '+encd(err)); 
+		resp.html(' <span class="eicon">W</span> '+encodeHTML(err)); 
 		
 		focusLastMessage();
 	};

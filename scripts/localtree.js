@@ -30,14 +30,6 @@ window.formatStaticValue = function(data, nobrk){
 	};
 };
 
-function encodeHTML(s) {
-    s = s.replace(/&/g, '&amp;');
-	s = s.replace(/</g, '&lt;');
-	s = s.replace(/"/g, '&quot;');
-	s = s.replace(/(\r\n|\n|\r)/gm, '<br>');
-	return s;
-}
-
 function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
 		$('<div class="header"><span class="fn">'+k+'</span>'+formatStaticValue(d,1) +' </div>').appendTo(container);
