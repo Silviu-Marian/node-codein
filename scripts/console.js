@@ -15,7 +15,7 @@ $(document).ready(function(){
 	var decd = function(v){ return $('<div />').html(v).text();};
 	
 	window.clearConsole = function() {
-		$.ajax({url:'./', type:'POST', dataType:'text', data:'clear', complete:function(r) {
+		$.ajax({url:'./', type:'POST', dataType:'text', data:{'clear':true}, complete:function(r) {
 			if(r.status!==200) return showAnError('Bad response from server ('+r.status+')');
 
 			c.val('');

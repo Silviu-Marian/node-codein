@@ -237,7 +237,7 @@ var dbg = {
 				
 				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
 				s.end(r);
-			} else if(post == "clear") {
+			} else if(post.clear) {
 				clear();
 				s.end();
 			} else if(post.dynget) {
