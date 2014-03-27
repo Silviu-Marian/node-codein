@@ -4,13 +4,70 @@ var file_get_contents = function(f,mode){return (!file_exists(f))? '' : require(
 var get_constr = function(v){ return(v===null)?"[object Null]":Object.prototype.toString.call(v); }; 
 // var fnprefix = (["FUNCTION"].concat(process.hrtime()).concat(process.hrtime())).join('.'); // ONLY WORKS IN LATER Vs
 var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime());
+
+var util = require("util");
 var stringify = require('./stringify.js'); 
-var jsencr = function(o){ var e = []; return stringify(o, function(k,v){
-	if(typeof(v)==='function') return fnprefix+v.toString();
-	if(typeof(v)!=='object' || v===null)	return v;
-	for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
-	e.push(v); return v;
-}); };
+
+var jsencr = function(o){
+	var value = {};
+	switch(typeof o) {
+	case 'object':
+		var id = objCache.register(o);
+		value.type = "object";
+		value.typename = "Object";
+		if(o.constructor && o.constructor.name) {
+			value.typename = o.constructor.name;
+		value.objid = id;
+		value.keys = [];
+		for(var key in o) {
+			// Add all keys which are strings or int. Otherwise, don't for now for simplification.
+			if(util.isString(key) || util.isNumber(key))
+				value.keys.push(key);
+		}
+		break;
+	default:
+		value.type = "other";
+		value.value = o;
+	}
+	var e = [];
+	return stringify(value, function(k,v){
+		if(typeof(v)==='function') return fnprefix+v.toString();
+		if(typeof(v)!=='object' || v===null)	return v;
+		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
+		e.push(v);
+		return v;
+	});
+};
+
+var assert = require("assert");
+
+var _objCache_counter = 0;
+
+function createObjCache() {
+	var objToId = {};
+	var idToObj = {};
+	
+	return {
+		register: register,
+		get: get
+	};
+	
+	function register(obj) {
+		if(obj in objToId) return objToId[obj];
+		_objCache_counter++;
+		var newId = _objCache_counter;
+		assert(!(newId in idToObj));
+		objToId[obj] = newId;
+		idToObj[newId] = obj;
+		return newId;
+	}
+	
+	function get(id) {
+		return idToObj[id];
+	}
+}
+
+var objCache = createObjCache();
 
 
 var dbg = {
