@@ -20,7 +20,7 @@ $(document).ready(function(){
 
 			c.val('');
 			return vw.html('');
-		});
+		}});
 	};
 	window.focusLastMessage = function(){ vwscr.scrollTo(0,vw.height()); };
 	
@@ -37,9 +37,9 @@ $(document).ready(function(){
 		if(typeof(r.fnprefix)==='string') window.fnprefix = r.fnprefix; 
 		if(r.cnt===null) tpo = 'null';
 			
-		switch(r.cnt.type){
+		switch(typeof r.cnt){
 			case 'object':
-				createTreeFromObj(r.cnt:, $('.autoexpand').is('.sel')).appendTo(resp);
+				createTreeFromObj(r.cnt, $('.autoexpand').is('.sel')).appendTo(resp);
 				break;
 			default:
 				$(formatStaticValue(r.cnt.value,false)).appendTo(resp);
