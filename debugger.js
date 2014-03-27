@@ -227,7 +227,7 @@ var dbg = {
 					r.type = (typeof(r.cnt)==='object' && r.cnt!==null) ? 
 						get_constr(r.cnt) : 
 						typeof(r.cnt);
-				}catch(e){ r.error=e.toString(); }
+				}catch(e){ r.error= "" + (e.stack || e); }
 					
 				s.end(jsencr(r, true));
 			} else if(typeof(post.getsug)==='string'){
@@ -248,7 +248,7 @@ var dbg = {
 				try{
 					var obj = objCache.get(objid);
 					r.cnt = obj[key];
-				}catch(e){ r.error=e.toString(); }
+				}catch(e){ r.error= "" + (e.stack || e); }
 					
 				s.end(jsencr(r, true));
 			}else{
