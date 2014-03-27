@@ -70,6 +70,10 @@ function createObjCache() {
 
 var objCache = createObjCache();
 
+function clear() {
+	// reset obj cache
+	objCache = createObjCache();
+}
 
 var dbg = {
 	
@@ -220,6 +224,7 @@ var dbg = {
 				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
 				s.end(r);
 			} else if(post == "clear") {
+				clear();
 				s.end();
 			}else{
 				return dbg.serve500(s,'Command was not found');	
