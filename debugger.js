@@ -37,7 +37,7 @@ var jsencr = function(o){
 			if(!prop || !prop.get)
 				value.attribs.push([true, o[key]]);
 			else
-				value.attribs([false, undefined]);
+				value.attribs.push([false, undefined]);
 		}
 		return value;
 	}
