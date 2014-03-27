@@ -85,9 +85,9 @@ window.createTreeFromDynObj = function(obj,autoexpand){
 				if(!getCmd.is(':visible')) return; // already requested
 				getCmd.hide();
 				
-				$.ajax({url:'./', type:'POST', dataType:'text', data:{'dynget':{objid:obj.objid, key:k}}, complete:function(r){
+				$.ajax({url:'./', type:'POST', dataType:'text', data:{dynget:obj.objid, key:k}, complete:function(r){
 					if(r.status!==200) {
-						showError("Bad server response " + r.status + " " + r);
+						showError("Bad server response " + r.status);
 						return;
 					}
 					
