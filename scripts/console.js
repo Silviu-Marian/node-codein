@@ -35,9 +35,10 @@ $(document).ready(function(){
 	window.showAResponse = function(r){ 
 		var resp = $('<div class="output"></div>').appendTo(vw);
 		if(typeof(r.fnprefix)==='string') window.fnprefix = r.fnprefix; 
+		var tpo = typeof(r.cnt);
 		if(r.cnt===null) tpo = 'null';
 			
-		switch(typeof r.cnt){
+		switch(tpo){
 			case 'object':
 				createTreeFromObj(r.cnt, $('.autoexpand').is('.sel')).appendTo(resp);
 				break;
