@@ -5,7 +5,6 @@ window.formatStaticValue = function(data, nobrk){
 	var encd = function(v){ return $('<div />').text(v).html();};
 	var fnprefix = typeof(window.fnprefix)=='string' ? window.fnprefix : '{'+(new Date().getTime()) + '#!@';
 		
-	if(type==='object') return false;
 	if(data===null) type='null';
 	if(type==='string' && typeof fnprefix !== 'undefined' && data.indexOf(fnprefix+'function')===0 && data.lastIndexOf(fnprefix+'function')===0){
 		type='function';
