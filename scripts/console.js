@@ -42,7 +42,7 @@ $(document).ready(function(){
 				createTreeFromObj(r.cnt, $('.autoexpand').is('.sel')).appendTo(resp);
 				break;
 			default:
-				$(formatStaticValue(r.cnt.value,false)).appendTo(resp);
+				$(formatStaticValue(r.cnt,false)).appendTo(resp);
 				break;
 		}; 
 		focusLastMessage();
