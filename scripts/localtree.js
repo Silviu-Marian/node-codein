@@ -31,7 +31,13 @@ window.formatStaticValue = function(data, nobrk){
 	};
 };
 
-var encd = function(v){ return $('<div />').text(v).html();};
+function encodeHTML(s) {
+    s = s.replace(/&/g, '&amp;');
+	s = s.replace(/</g, '&lt;');
+	s = s.replace(/"/g, '&quot;');
+	s = s.replace(/(\r\n|\n|\r)/gm, '<br>');
+	return s;
+}
 
 function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
@@ -78,7 +84,7 @@ window.createTreeFromDynObj = function(obj,autoexpand){
 			
 			function showError(msg) {
 				var resp = $('<div class="error"></div>').appendTo(hdr);
-				resp.html(' <span class="eicon">W</span> ' + encd(msg));
+				resp.html(' <span class="eicon">W</span> ' + encodeHTML(msg));
 			}
 			
 			function getAttrib() {
