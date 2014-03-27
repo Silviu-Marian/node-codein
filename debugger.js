@@ -17,7 +17,7 @@ function objGetPropertyDescriptor(obj, key) {
 	}
 }
 
-var jsencr = function(o){
+var jsencr = function(o, rawRoot) {
 	function objDescription(o) {
 		var value = {};
 		var id = objCache.register(o);
@@ -43,11 +43,12 @@ var jsencr = function(o){
 	}
 	var e = [];
 	return stringify(o, function(k,v){
-		if(typeof(v)==='function') return fnprefix+v.toString();
+		if(typeof(v)==='function') return "[Function]";
 		if(typeof(v)!=='object' || v===null)	return v;
 		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
 		e.push(v);
 		if(util.isArray(v)) return v;
+		if(v === o && rawRoot) return v;
 		return objDescription(v);
 	});
 };
@@ -66,7 +67,7 @@ function createObjCache() {
 	};
 	
 	function register(obj) {
-		if(obj in objToId) return objToId[obj];
+		//if(obj in objToId) return objToId[obj]; // doesnt work
 		_objCache_counter++;
 		var newId = _objCache_counter;
 		assert(!(newId in idToObj));
@@ -228,7 +229,7 @@ var dbg = {
 						typeof(r.cnt);
 				}catch(e){ r.error=e.toString(); }
 					
-				s.end(jsencr(r));
+				s.end(jsencr(r, true));
 			} else if(typeof(post.getsug)==='string'){
 				
 				try{ var r = jsencr(dbg.getsug(JSON.parse(post.getsug)));	}
@@ -240,14 +241,16 @@ var dbg = {
 				clear();
 				s.end();
 			} else if(post.dynget) {
+				var objid = post.dynget;
+				var key = post.key;
 				var r = {error:false};
 				
 				try{
-					var obj = objCache.get(post.dynget.objid);
-					r.cnt = obj[post.dynget.key];
+					var obj = objCache.get(objid);
+					r.cnt = obj[key];
 				}catch(e){ r.error=e.toString(); }
 					
-				s.end(jsencr(r));
+				s.end(jsencr(r, true));
 			}else{
 				return dbg.serve500(s,'Command was not found');	
 			}
