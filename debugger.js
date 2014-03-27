@@ -17,6 +17,7 @@ var jsencr = function(o){
 		value.typename = "Object";
 		if(o.constructor && o.constructor.name) {
 			value.typename = o.constructor.name;
+		value.str = "[" + value.typename + "]";
 		value.objid = id;
 		value.keys = [];
 		for(var key in o) {
@@ -218,6 +219,8 @@ var dbg = {
 				
 				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
 				s.end(r);
+			} else if(post == "clear") {
+				s.end();
 			}else{
 				return dbg.serve500(s,'Command was not found');	
 			}
