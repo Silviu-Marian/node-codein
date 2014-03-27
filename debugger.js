@@ -8,35 +8,47 @@ var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime());
 var util = require("util");
 var stringify = require('./stringify.js'); 
 
+function objGetPropertyDescriptor(obj, key) {
+	while(true) {
+		var desc = Object.getOwnPropertyDescriptor(obj, key);
+		if(desc) return desc;
+		obj = Object.getPrototypeOf(obj);
+		if(obj === Object) return null;
+	}
+}
+
 var jsencr = function(o){
-	var value = {};
-	switch(typeof o) {
-	case 'object':
+	function objDescription(o) {
+		var value = {};
 		var id = objCache.register(o);
 		value.type = "object";
 		value.typename = "Object";
-		if(o.constructor && o.constructor.name) {
+		if(o.constructor && o.constructor.name)
 			value.typename = o.constructor.name;
 		value.str = "[" + value.typename + "]";
 		value.objid = id;
 		value.keys = [];
+		value.attribs = []; // each item is a 2-tuple. _[0] says whether this is static. if static, _[1] is the value.
 		for(var key in o) {
 			// Add all keys which are strings or int. Otherwise, don't for now for simplification.
-			if(util.isString(key) || util.isNumber(key))
-				value.keys.push(key);
+			if(!util.isString(key) && !util.isNumber(key)) continue;
+			value.keys.push(key);
+			var prop = objGetPropertyDescriptor(o, key);
+			if(!prop || !prop.get)
+				value.attribs.push([true, o[key]]);
+			else
+				value.attribs([false, undefined]);
 		}
-		break;
-	default:
-		value.type = "other";
-		value.value = o;
+		return value;
 	}
 	var e = [];
-	return stringify(value, function(k,v){
+	return stringify(o, function(k,v){
 		if(typeof(v)==='function') return fnprefix+v.toString();
 		if(typeof(v)!=='object' || v===null)	return v;
 		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
+		if(util.isArray(v)) return v;
 		e.push(v);
-		return v;
+		return objDescription(v);
 	});
 };
 
@@ -226,6 +238,15 @@ var dbg = {
 			} else if(post == "clear") {
 				clear();
 				s.end();
+			} else if(post.dynget) {
+				var r = {error:false};
+				
+				try{
+					var obj = objCache.get(post.dynget.objid);
+					r.cnt = obj[post.dynget.key];
+				}catch(e){ r.error=e.toString(); }
+					
+				s.end(jsencr(r));
 			}else{
 				return dbg.serve500(s,'Command was not found');	
 			}
