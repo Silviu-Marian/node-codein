@@ -31,19 +31,20 @@ window.formatStaticValue = function(data, nobrk){
 	};
 };
 
+var encd = function(v){ return $('<div />').text(v).html();};
+
+
 window.createTreeFromObj = function(obj,autoexpand){ 
 	if(typeof(obj)!=='object' || null==obj)
 		return false;
 		
 	var ul = $('<ul class="object"></ul>');
-	var keys = [];  for(var i in obj) keys.push(i); if(typeof(obj.length)=='undefined') keys.sort();
 	
-	for(var i=0; i<keys.length; i++)(function(d,k){
-		
+	function appendAttrib(k, d, container) {
 		if(typeof(d)!=='object' || d===null){
-			$('<li class="nobrk header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </li>').appendTo(ul);
+			$('<div class="header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </div>').appendTo(container);
 		}else{
-			var li = $('<li class="nobrk expandable"></li>').appendTo(ul);
+			var li = $('<div class="expandable"></div>').appendTo(container);
 			var hdr = $('<div class="header"></div>').appendTo(li);
 			var arrow = $('<span class="arrow-right arrow-collapsed">&#9658;</span>').appendTo(hdr);
 			var key = $('<span class="fn">' + k +'</span>').appendTo(hdr)
@@ -64,9 +65,57 @@ window.createTreeFromObj = function(obj,autoexpand){
 			arrow.click(function(){ if(!$('.dotstruct').is('.sel')) expand(); });
 			hdr.click(function(){ if($('.dotstruct').is('.sel')) expand(); });
 			if(!!autoexpand) expand();
-		};
+		};	
+	}
+	
+	function appendAttribGeneric(k, attr) {
+		var li = $('<li class="nobrk"></li>').appendTo(ul);
 		
-	}(obj[keys[i]], keys[i]));
+		if(!attr[0]) {
+			var hdr = $('<div class="header"></div>').appendTo(li);
+			var key = $('<span class="fn">' + k +'</span>').appendTo(hdr)
+			var getCmd = $('<span class="tool">&lt;get&gt;</span>').appendTo(hdr);
+			
+			function showError(msg) {
+				var resp = $('<div class="error"></div>').appendTo(hdr);
+				resp.html(' <span class="eicon">W</span> ' + encd(msg));
+			}
+			
+			function getAttrib() {
+				if(!getCmd.is(':visible')) return; // already requested
+				getCmd.hide();
+				
+				$.ajax({url:'./', type:'POST', dataType:'text', data:{'dynget':{objid:obj.objid, key:k}}, complete:function(r){
+					if(r.status!==200) {
+						showError("Bad server response " + r.status + " " + r);
+						return;
+					}
+					
+					try{ var pa = JSON.parse(r.responseText); }catch(e){
+						showError('Failed to parse response ('+e+')');
+						return;
+					};
+					
+					if(pa.error) {
+						showError(pa.error);
+						return;
+					}
+					
+					hdr.hide();
+					appendAttrib(k, pa.cnt, li);
+				}});
+			};
+			getCmd.click(getAttrib);
+			hdr.click(getAttrib);
+			return;
+		}
+		
+		var d = attr[1];
+		appendAttrib(k, d, li);
+	}
+	
+	for(var i=0; i<obj.keys.length; i++)
+		appendAttribGeneric(obj.keys[i], obj.attribs[i]);
 	
 	return ul;
 }
