@@ -15,22 +15,6 @@ $(document).ready(function(){
 	var decd = function(v){ return $('<div />').html(v).text();};
 	
 	window.clearConsole = function(){ c.val(''); return vw.html('');};
-		
-	var treefiy_obj = function(o, n, c){
-		var r = { data:"<span class='fn' title='"+n+"'>"+n+"</span>",  state:!!c ? 'open' : 'closed', children:[] };
-		for(var i in o){
-			if(typeof(o[i])==='object' && o[i]!==null)
-				o[i] = treefiy_obj(o[i], i);
-			else{
-				var val = encd(o[i]);
-				// if(val.length>100) val = '<span>'+val.substr(0,100)+'... (length: '+val.length+')</span>';
-				o[i] = "<span class='fn' title='"+i+"'>"+i+"</span><span class='undef'>"+val+'</span>';
-			}; 			
-			r.children.push(o[i]);
-		};
-		return r;
-	};
-	
 	window.focusLastMessage = function(){ vwscr.scrollTo(0,vw.height()); };
 	
 	window.showAnError = function(err, type){ 
