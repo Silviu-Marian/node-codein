@@ -33,41 +33,41 @@ window.formatStaticValue = function(data, nobrk){
 
 var encd = function(v){ return $('<div />').text(v).html();};
 
+function appendAttrib(k, d, container, autoexpand) {
+	if(typeof(d)!=='object' || d===null){
+		$('<div class="header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </div>').appendTo(container);
+	}else{
+		var li = $('<div class="expandable"></div>').appendTo(container);
+		var hdr = $('<div class="header"></div>').appendTo(li);
+		var arrow = $('<span class="arrow-right arrow-collapsed">&#9658;</span>').appendTo(hdr);
+		var key = $('<span class="fn">' + k +'</span>').appendTo(hdr)
+		
+		var expand = function(){
+			var tgt = li.find('>.object');
+			if(tgt.length && tgt.is(':visible')){
+				tgt.hide();
+				arrow.removeClass('arrow-expanded').addClass('arrow-collapsed').html('&#9658;');
+			}else{
+				if(!tgt.length)	tgt = createTreeFromObj(d).appendTo(li);
+				tgt.show();
+				arrow.removeClass('arrow-collapsed').addClass('arrow-expanded').html('&#9660;');
+			};
+			if(typeof(doResizeWin)=='function') doResizeWin();
+		};
+		
+		arrow.click(function(){ if(!$('.dotstruct').is('.sel')) expand(); });
+		hdr.click(function(){ if($('.dotstruct').is('.sel')) expand(); });
+		if(!!autoexpand) expand();
+	};	
+}
 
-window.createTreeFromObj = function(obj,autoexpand){ 
+
+window.createTreeFromDynObj = function(obj,autoexpand){ 
 	if(typeof(obj)!=='object' || null==obj)
 		return false;
 		
 	var ul = $('<ul class="object"></ul>');
-	
-	function appendAttrib(k, d, container) {
-		if(typeof(d)!=='object' || d===null){
-			$('<div class="header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </div>').appendTo(container);
-		}else{
-			var li = $('<div class="expandable"></div>').appendTo(container);
-			var hdr = $('<div class="header"></div>').appendTo(li);
-			var arrow = $('<span class="arrow-right arrow-collapsed">&#9658;</span>').appendTo(hdr);
-			var key = $('<span class="fn">' + k +'</span>').appendTo(hdr)
-			
-			var expand = function(){
-				var tgt = li.find('>.object');
-				if(tgt.length && tgt.is(':visible')){
-					tgt.hide();
-					arrow.removeClass('arrow-expanded').addClass('arrow-collapsed').html('&#9658;');
-				}else{
-					if(!tgt.length)	 tgt = createTreeFromObj(d).appendTo(li);
-					tgt.show();
-					arrow.removeClass('arrow-collapsed').addClass('arrow-expanded').html('&#9660;');
-				};
-				if(typeof(doResizeWin)=='function') doResizeWin();
-			};
-			
-			arrow.click(function(){ if(!$('.dotstruct').is('.sel')) expand(); });
-			hdr.click(function(){ if($('.dotstruct').is('.sel')) expand(); });
-			if(!!autoexpand) expand();
-		};	
-	}
-	
+		
 	function appendAttribGeneric(k, attr) {
 		var li = $('<li class="nobrk"></li>').appendTo(ul);
 		
@@ -102,7 +102,7 @@ window.createTreeFromObj = function(obj,autoexpand){
 					}
 					
 					hdr.hide();
-					appendAttrib(k, pa.cnt, li);
+					appendAttrib(k, pa.cnt, li, autoexpand);
 				}});
 			};
 			getCmd.click(getAttrib);
@@ -111,11 +111,28 @@ window.createTreeFromObj = function(obj,autoexpand){
 		}
 		
 		var d = attr[1];
-		appendAttrib(k, d, li);
+		appendAttrib(k, d, li, autoexpand);
 	}
 	
 	for(var i=0; i<obj.keys.length; i++)
 		appendAttribGeneric(obj.keys[i], obj.attribs[i]);
 	
 	return ul;
+}
+
+
+window.createTreeFromRawObj = function(obj, autoexpand) {
+	var ul = $('<ul class="object"></ul>');
+	for(var key in obj) {
+		var li = $('<li class="nobrk"></li>').appendTo(ul);
+		appendAttrib(key, obj[key], li, autoexpand);
+	}
+	return ul;
+}
+
+window.createTreeFromArray = window.createTreeFromRawObj;
+
+window.createTreeFromObj = function(obj, autoexpand) {
+	if(Array.isArray(obj)) return window.createTreeFromArray(obj, autoexpand);
+	return createTreeFromDynObj(obj, autoexpand);
 }
