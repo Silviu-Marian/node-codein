@@ -46,8 +46,8 @@ var jsencr = function(o){
 		if(typeof(v)==='function') return fnprefix+v.toString();
 		if(typeof(v)!=='object' || v===null)	return v;
 		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
-		if(util.isArray(v)) return v;
 		e.push(v);
+		if(util.isArray(v)) return v;
 		return objDescription(v);
 	});
 };
@@ -115,7 +115,8 @@ var dbg = {
 	broadcastSSE: function(t, a){
 		clearTimeout(dbg.pendingBroadcast);
 		
-		var data = { t:t, a:a };
+		a = Array.prototype.slice.call(a, 0);; // make it an array
+		var data = [t,a];
 		dbg.queued.push(data);
 		
 		var sendFn = function(){
