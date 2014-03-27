@@ -64,11 +64,13 @@ var jsencr = function(o, rawRoot) {
 
 var assert = require("assert");
 
-var _objCache_counter = 0;
+function getRandomId() {
+	return Math.floor((new Date()).valueOf() + new Date(2000,0,0).valueOf()*Math.random());
+}
 
 function createObjCache() {
-	var objToId = {};
-	var idToObj = {};
+	var objToId = new WeakMap();
+	var idToObj = new Map();
 	
 	return {
 		register: register,
@@ -76,17 +78,19 @@ function createObjCache() {
 	};
 	
 	function register(obj) {
-		//if(obj in objToId) return objToId[obj]; // doesnt work
-		_objCache_counter++;
-		var newId = _objCache_counter;
-		assert(!(newId in idToObj));
-		objToId[obj] = newId;
-		idToObj[newId] = obj;
+		if(objToId.has(obj)) return objToId.get(obj);
+		var newId;
+		while(true) {
+			newId = getRandomId();
+			if(!idToObj.has(newId)) break;
+		}
+		objToId.set(obj, newId);
+		idToObj.set(newId, obj);
 		return newId;
 	}
 	
 	function get(id) {
-		return idToObj[id];
+		return idToObj.get(Number(id));
 	}
 }
 
