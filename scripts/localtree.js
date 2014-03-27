@@ -42,6 +42,8 @@ function encodeHTML(s) {
 function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
 		$('<div class="header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </div>').appendTo(container);
+	}else if(d.type == "function"){
+		$('<div class="header"><span class="fn">'+k+'</span> <span class="str">'+encodeHTML(d.str)+'</span> </div>').appendTo(container);		
 	}else{
 		var li = $('<div class="expandable"></div>').appendTo(container);
 		var hdr = $('<div class="header"></div>').appendTo(li);
@@ -71,7 +73,10 @@ function appendAttrib(k, d, container, autoexpand) {
 window.createTreeFromDynObj = function(obj,autoexpand){ 
 	if(typeof(obj)!=='object' || null==obj)
 		return false;
-		
+	
+	if(obj.type == "function")
+		return '<span class="str">'+encodeHTML(obj.str)+'</span>';
+	
 	var ul = $('<ul class="object"></ul>');
 		
 	function appendAttribGeneric(k, attr) {

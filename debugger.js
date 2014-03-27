@@ -41,9 +41,18 @@ var jsencr = function(o, rawRoot) {
 		}
 		return value;
 	}
+	function funcDesc(f) {
+		var value = {};
+		value.type = "function";
+		value.typename = "Function";
+		value.name = f.name;
+		if(value.name) value.str = "[Function: " + f.name + "]";
+		else value.str = "[Function]";
+		return value;
+	}
 	var e = [];
 	return stringify(o, function(k,v){
-		if(typeof(v)==='function') return "[Function]";
+		if(typeof(v)==='function') return funcDesc(o);
 		if(typeof(v)!=='object' || v===null)	return v;
 		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
 		e.push(v);
