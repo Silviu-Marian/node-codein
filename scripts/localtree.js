@@ -41,14 +41,15 @@ function encodeHTML(s) {
 
 function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
-		$('<div class="header"><span class="fn">'+k+'</span> '+formatStaticValue(d,1) +' </div>').appendTo(container);
+		$('<div class="header"><span class="fn">'+k+'</span>'+formatStaticValue(d,1) +' </div>').appendTo(container);
 	}else if(d.type == "function"){
-		$('<div class="header"><span class="fn">'+k+'</span> <span class="str">'+encodeHTML(d.str)+'</span> </div>').appendTo(container);		
+		$('<div class="header"><span class="fn">'+k+'</span><span class="str">'+encodeHTML(d.str)+'</span></div>').appendTo(container);		
 	}else{
 		var li = $('<div class="expandable"></div>').appendTo(container);
 		var hdr = $('<div class="header"></div>').appendTo(li);
 		var arrow = $('<span class="arrow-right arrow-collapsed">&#9658;</span>').appendTo(hdr);
-		var key = $('<span class="fn">' + k +'</span>').appendTo(hdr)
+		var key = $('<span class="fn">' + k +'</span>').appendTo(hdr);
+		var desc = $('<span class="str">' + encodeHTML(d.str) + '</span>').appendTo(hdr);
 		
 		var expand = function(){
 			var tgt = li.find('>.object');
@@ -113,7 +114,7 @@ window.createTreeFromDynObj = function(obj,autoexpand){
 					}
 					
 					hdr.hide();
-					appendAttrib(k, pa.cnt, li, autoexpand);
+					appendAttrib(k, pa.cnt, li, true);
 				}});
 			};
 			getCmd.click(getAttrib);
