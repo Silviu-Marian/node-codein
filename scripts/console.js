@@ -14,7 +14,14 @@ $(document).ready(function(){
 	var encd = function(v){ return $('<div />').text(v).html();};
 	var decd = function(v){ return $('<div />').html(v).text();};
 	
-	window.clearConsole = function(){ c.val(''); return vw.html('');};
+	window.clearConsole = function() {
+		$.ajax({url:'./', type:'POST', dataType:'text', data:'clear', complete:function(r) {
+			if(r.status!==200) return showAnError('Bad response from server ('+r.status+')');
+
+			c.val('');
+			return vw.html('');
+		});
+	};
 	window.focusLastMessage = function(){ vwscr.scrollTo(0,vw.height()); };
 	
 	window.showAnError = function(err, type){ 
@@ -27,16 +34,15 @@ $(document).ready(function(){
 	
 	window.showAResponse = function(r){ 
 		var resp = $('<div class="output"></div>').appendTo(vw);
-		var tpo = typeof(r.cnt); 
 		if(typeof(r.fnprefix)==='string') window.fnprefix = r.fnprefix; 
 		if(r.cnt===null) tpo = 'null';
 			
-		switch(tpo){
+		switch(r.cnt.type){
 			case 'object':
-				createTreeFromObj({'[object Object]':r.cnt}, $('.autoexpand').is('.sel')).appendTo(resp);
+				createTreeFromObj(r.cnt:, $('.autoexpand').is('.sel')).appendTo(resp);
 				break;
 			default:
-				$(formatStaticValue(r.cnt,false)).appendTo(resp);
+				$(formatStaticValue(r.cnt.value,false)).appendTo(resp);
 				break;
 		}; 
 		focusLastMessage();
