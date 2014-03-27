@@ -26,6 +26,8 @@ window.formatStaticValue = function(data, nobrk){
 			
 			var r = '<span class="str'+(!!nobrk?' nobrk':'')+'">' + (d)+'</span>'; 
 			return (type=='string' ? '<span>&quot;</span>'+r+'<span>&quot;</span>' : r);
+		default:
+			return '<span class="undef">unknown '+type+'</span>';
 	};
 };
 
