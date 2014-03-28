@@ -260,8 +260,13 @@ var dbg = {
 				
 				try{
 					var obj = objCache.get(objid);
-					r.cnt = obj[key];
-				}catch(e){ r.error= "" + (e.stack || e); }
+					if(!obj)
+						r.error = "Object not found. Probably we have restarted the session.";
+					else
+						r.cnt = obj[key];
+				} catch(e) {
+					r.error= "" + (e.stack || e);
+				}
 					
 				s.end(jsencr(r, true));
 			}else{
