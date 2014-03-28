@@ -32,7 +32,7 @@ window.formatStaticValue = function(data, nobrk){
 
 function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
-		$('<div class="header"><span class="fn">'+k+'</span>'+formatStaticValue(d,1) +' </div>').appendTo(container);
+		$('<div class="header"><span class="fn">'+k+'</span>'+formatStaticValue(d,false) +' </div>').appendTo(container);
 	}else if(d.type == "function"){
 		$('<div class="header"><span class="fn">'+k+'</span><span class="str">'+encodeHTML(d.str)+'</span></div>').appendTo(container);		
 	}else{
