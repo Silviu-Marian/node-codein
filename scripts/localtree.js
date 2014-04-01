@@ -40,7 +40,10 @@ function appendAttrib(k, d, container, autoexpand) {
 		var hdr = $('<div class="header"></div>').appendTo(li);
 		var arrow = $('<span class="arrow-right arrow-collapsed">&#9658;</span>').appendTo(hdr);
 		var key = $('<span class="fn">' + k +'</span>').appendTo(hdr);
-		var desc = $('<span class="str">' + encodeHTML(d.str) + '</span>').appendTo(hdr);
+		var descStr = d.str;
+		if(!descStr && d.constructor) descStr = "[" + d.constructor.name + "]";
+		if(!descStr) descStr = "<unknown object>";
+		var desc = $('<span class="str">' + encodeHTML(descStr) + '</span>').appendTo(hdr);
 		
 		var expand = function(){
 			var tgt = li.find('>.object');
