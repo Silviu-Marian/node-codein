@@ -34,7 +34,7 @@ function appendAttrib(k, d, container, autoexpand) {
 	if(typeof(d)!=='object' || d===null){
 		$('<div class="header"><span class="fn">'+k+'</span>'+formatStaticValue(d,false) +' </div>').appendTo(container);
 	}else if(d.type == "function"){
-		$('<div class="header"><span class="fn">'+k+'</span><span class="str">'+encodeHTML(d.str)+'</span></div>').appendTo(container);		
+		$('<div class="header"><span class="fn">'+k+'</span><span class="str">'+encodeHTML(d.str)+' </span></div>').appendTo(container);		
 	}else{
 		var li = $('<div class="expandable"></div>').appendTo(container);
 		var hdr = $('<div class="header"></div>').appendTo(li);
@@ -43,7 +43,7 @@ function appendAttrib(k, d, container, autoexpand) {
 		var descStr = d.str;
 		if(!descStr && d.constructor) descStr = "[" + d.constructor.name + "]";
 		if(!descStr) descStr = "<unknown object>";
-		var desc = $('<span class="str">' + encodeHTML(descStr) + '</span>').appendTo(hdr);
+		var desc = $('<span class="str">' + encodeHTML(descStr) + ' </span>').appendTo(hdr);
 		
 		var expand = function(){
 			var tgt = li.find('>.object');
@@ -88,10 +88,12 @@ window.createTreeFromDynObj = function(obj,autoexpand){
 			}
 			
 			function getAttrib() {
-				if(!getCmd.is(':visible')) return; // already requested
-				getCmd.hide();
+				getCmd.remove();
+				var waitSpan = $("<span>...</span>").appendTo(hdr);
 				
 				$.ajax({url:'./', type:'POST', dataType:'text', data:{dynget:obj.objid, key:k}, complete:function(r){
+					waitSpan.remove(); // remove old					
+
 					if(r.status!==200) {
 						showError("Bad server response " + r.status);
 						return;
@@ -107,8 +109,15 @@ window.createTreeFromDynObj = function(obj,autoexpand){
 						return;
 					}
 					
-					hdr.hide();
+					hdr.remove();
 					appendAttrib(k, pa.cnt, li, true);
+					
+					// re-add get-cmd to new header
+					hdr = li.find(">div")[0];
+					tgt = li.find(".header")[0];
+					getCmd.text("<re-get>");
+					getCmd.appendTo(tgt);
+					getCmd.click(getAttrib);
 				}});
 			};
 			getCmd.click(getAttrib);
