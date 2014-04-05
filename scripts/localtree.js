@@ -20,8 +20,7 @@ window.formatStaticValue = function(data, nobrk){
 			return '<span class="'+type+'">'+(typeof(data)!=='boolean'?data:(!!data?'true':'false'))+'</span>';
 		case 'string':
 		case 'function':
-			var d = encd(data.toString()); 
-			if(!!!nobrk) d = d.replace(/\r\n/gmi,"<br />").replace(/\n/gmi,"<br />").replace(/\t/gmi,tabSpaces);  
+			var d = encodeHTML(data.toString()); 
 			
 			var r = '<span class="str'+(!!nobrk?' nobrk':'')+'">' + (d)+'</span>'; 
 			return (type=='string' ? '<span>&quot;</span>'+r+'<span>&quot;</span>' : r);
