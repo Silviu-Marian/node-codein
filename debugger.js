@@ -228,7 +228,7 @@ var dbg = {
 		
 		dbg.sv.listen(port||55281, host||null,function(){
 			var add=dbg.sv.address();
-			console.log('Debugger server started at: ' + add.address + ':' + add.port);
+			console.log('Debugger server started at: http://' + add.address + ':' + add.port);
 			cb.call(null,dbg);
 		});
 		
