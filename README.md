@@ -12,7 +12,7 @@
 	Minimum: any OS that supports a browser that supports javascript (my Nokia N8 almost worked lol)</p>
 <h2>Deployment instructions</h2>
 <ol>
-	<li>Install the package via <b>&quot;npm install node-codein&quot;<b>, then include it in your script with require(&quot;node-codein&quot;); alternatively</li>
+	<li>Install the package via <b>&quot;npm install node-codein&quot;</b>, then include it in your script with require(&quot;node-codein&quot;); alternatively</li>
 	<li>Download the package, put it somewhere you can find it</li>
 	<li>In your script add require(&quot;path/to/folder/node-codein&quot;)</li>
 	<li>Run nodejs</li>
@@ -89,6 +89,7 @@
 			<li>saves last 50 command in local storage, use arrow keys to navigate through previous commands</li>
 			<li>typing suggestions and autocomplete</li>
 			<li>shift+enter for new lines </li>
+			<li>ctrl+L clears the console</li>
 			<li>tab key indents</li>
 		</ul>
 	</li>
