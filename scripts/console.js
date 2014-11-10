@@ -100,6 +100,15 @@ $(document).ready(function(){
 		return false;
 	}).tabby();
 	
+	// Ctrl+L clears the console
+	$.each([c,window], function(){
+		$(this).keypress(function(event) { 
+			if(!event.ctrlKey || (event.keyCode!=108 /* L key */ && event.keyCode!=12 /* 'clear' event */ ))  
+				return;
+			window.clearConsole();
+		}); 
+	});
+	
 	// RESIZING CONTAINER AREA
 	$('#formwrap').resizable({ handles:"n", minHeight:nsr_min, maxHeight:nsr_max }).resize(function(){
 		// $(this).css({cursor:'row-resize'});

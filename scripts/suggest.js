@@ -86,9 +86,14 @@ $(document).ready(function(){
 	var lastValid=0;
 	var lastQ = '';
 	
-	c.on('keydown', function(event){
+	c.on('keydown', function(event){ 
 		try{ if(!sugb.is(":visible")) return; }catch(e){};
-		if(event.keyCode==27 || event.keyCode==37 || event.keyCode==39) return hideSug();
+		if(0 
+			|| event.keyCode==27 /* home key */ 
+			|| event.keyCode==37 /* left arrow */ 
+			|| event.keyCode==39 /* right arrow */
+		) 
+			return hideSug();
 		
 		var ISUP = (event.keyCode===38);
 		var ISDW = (event.keyCode===40);
