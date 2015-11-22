@@ -2,7 +2,7 @@
 <p>Or simply node-codein (longtail for SEO) is supposed to do what Webkit Inspector's Console does. Except this works exclusively with NodeJS.</p>
 <h2>Screenshot</h2>
 
-<img src="https://github.com/ketamynx/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" /> 
+<img src="https://github.com/Silviu-Marian/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" /> 
 
 <h2>License</h2>
 <p>Released under MIT License (included); some components have their own licenses but I kept all the comments in their headers so if you're a really really boring person (lawyer, attorney, prosecutor, whatever) you can check the files under libraries/.</p>
@@ -119,7 +119,6 @@
 </ul>
 
 <hr />
-<p>Fork, pull, push, drag, chop, send, fax whatever you want you're free to do it.<br />
-	Good luck buddy.
+<p>Good luck!
 </p>
-<p>- ketamynx </p>
+

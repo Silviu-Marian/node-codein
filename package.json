@@ -1,15 +1,15 @@
 {
-  "author": "ketamynx (http://www.edmtop.com/)",
+  "author": "Silviu-Marian (http://www.github.com/Silviu-Marian/)",
   "name": "node-codein",
   "description": "NodeJS Console Object Debug Inspector",
   "keywords": ["console","inspect","inspector","object","tree","outline","viewer","debug","debugger","webkit","runtime","eval"],
   "version": "1.0.5",
-  "homepage": "https://github.com/ketamynx/node-codein",
+  "homepage": "https://github.com/Silviu-Marian/node-codein",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ketamynx/node-codein.git"
+    "url": "git://github.com/Silviu-Marian/node-codein.git"
   },
-  "bugs": "https://github.com/ketamynx/node-codein/issues",
+  "bugs": "https://github.com/Silviu-Marian/node-codein/issues",
   "main": "debugger.js",
   "dependencies": {},
   "devDependencies": {},
