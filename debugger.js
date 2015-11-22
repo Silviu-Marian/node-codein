@@ -4,14 +4,102 @@ var file_get_contents = function(f,mode){return (!file_exists(f))? '' : require(
 var get_constr = function(v){ return(v===null)?"[object Null]":Object.prototype.toString.call(v); }; 
 // var fnprefix = (["FUNCTION"].concat(process.hrtime()).concat(process.hrtime())).join('.'); // ONLY WORKS IN LATER Vs
 var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime());
-var stringify = require('./stringify.js'); 
-var jsencr = function(o){ var e = []; return stringify(o, function(k,v){
-	if(typeof(v)==='function') return fnprefix+v.toString();
-	if(typeof(v)!=='object' || v===null)	return v;
-	for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
-	e.push(v); return v;
-}); };
 
+var util = require("util");
+var stringify = require('./stringify.js'); 
+
+function objGetPropertyDescriptor(obj, key) {
+	while(true) {
+		var desc = Object.getOwnPropertyDescriptor(obj, key);
+		if(desc) return desc;
+		obj = Object.getPrototypeOf(obj);
+		if(obj === Object) return null;
+	}
+}
+
+var jsencr = function(o, rawRoot) {
+	function objDescription(o) {
+		var value = {};
+		var id = objCache.register(o);
+		value.type = "object";
+		value.typename = "Object";
+		if(o.constructor && o.constructor.name)
+			value.typename = o.constructor.name;
+		value.str = "[" + value.typename + "]";
+		value.objid = id;
+		value.keys = [];
+		value.attribs = []; // each item is a 2-tuple. _[0] says whether this is static. if static, _[1] is the value.
+		for(var key in o) {
+			// Add all keys which are strings or int. Otherwise, don't for now for simplification.
+			if(!util.isString(key) && !util.isNumber(key)) continue;
+			value.keys.push(key);
+			var prop = objGetPropertyDescriptor(o, key);
+			if(!prop || !prop.get)
+				value.attribs.push([true, o[key]]);
+			else
+				value.attribs.push([false, undefined]);
+		}
+		return value;
+	}
+	function funcDesc(f) {
+		var value = {};
+		value.type = "function";
+		value.typename = "Function";
+		value.name = f.name;
+		if(value.name) value.str = "[Function: " + f.name + "]";
+		else value.str = "[Function]";
+		return value;
+	}
+	var e = [];
+	return stringify(o, function(k,v){
+		if(typeof(v)==='function') return funcDesc(o);
+		if(typeof(v)!=='object' || v===null)	return v;
+		for(var i in e){ if(e[i]===v){ return "Circular"; }}; 
+		e.push(v);
+		if(util.isArray(v)) return v;
+		if(v === o && rawRoot) return v;
+		return objDescription(v);
+	});
+};
+
+var assert = require("assert");
+
+function getRandomId() {
+	return Math.floor((new Date()).valueOf() + new Date(2000,0,0).valueOf()*Math.random());
+}
+
+function createObjCache() {
+	var objToId = new WeakMap();
+	var idToObj = new Map();
+	
+	return {
+		register: register,
+		get: get
+	};
+	
+	function register(obj) {
+		if(objToId.has(obj)) return objToId.get(obj);
+		var newId;
+		while(true) {
+			newId = getRandomId();
+			if(!idToObj.has(newId)) break;
+		}
+		objToId.set(obj, newId);
+		idToObj.set(newId, obj);
+		return newId;
+	}
+	
+	function get(id) {
+		return idToObj.get(Number(id));
+	}
+}
+
+var objCache = createObjCache();
+
+function clear() {
+	// reset obj cache
+	objCache = createObjCache();
+}
 
 var dbg = {
 	
@@ -41,7 +129,8 @@ var dbg = {
 	broadcastSSE: function(t, a){
 		clearTimeout(dbg.pendingBroadcast);
 		
-		var data = { t:t, a:a };
+		a = Array.prototype.slice.call(a, 0);; // make it an array
+		var data = [t,a];
 		dbg.queued.push(data);
 		
 		var sendFn = function(){
@@ -151,9 +240,9 @@ var dbg = {
 					r.type = (typeof(r.cnt)==='object' && r.cnt!==null) ? 
 						get_constr(r.cnt) : 
 						typeof(r.cnt);
-				}catch(e){ r.error=e.toString(); }
+				}catch(e){ r.error= "" + (e.stack || e); }
 					
-				s.end(jsencr(r));
+				s.end(jsencr(r, true));
 			} else if(typeof(post.getsug)==='string'){
 				
 				try{ var r = jsencr(dbg.getsug(JSON.parse(post.getsug)));	}
@@ -161,6 +250,25 @@ var dbg = {
 				
 				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
 				s.end(r);
+			} else if(post.clear) {
+				clear();
+				s.end();
+			} else if(post.dynget) {
+				var objid = post.dynget;
+				var key = post.key;
+				var r = {error:false};
+				
+				try{
+					var obj = objCache.get(objid);
+					if(!obj)
+						r.error = "Object not found. Probably we have restarted the session.";
+					else
+						r.cnt = obj[key];
+				} catch(e) {
+					r.error= "" + (e.stack || e);
+				}
+					
+				s.end(jsencr(r, true));
 			}else{
 				return dbg.serve500(s,'Command was not found');	
 			}

@@ -32,17 +32,17 @@ $(document).ready(function(){ setTimeout(function(){
 			catch(e){ var q = []};
 			
 			for(var j=0; j<q.length; j++)(function(q){
-				if(typeof(q.t)!=='string') return;
-				switch(q.t){
+				if(typeof(q[0])!=='string') return;
+				switch(q[0]){
 					
 					case 'log':
 					case 'info':
-						for(var i in q.a)
-							showAResponse({cnt:q.a[i], type:typeof(q.a[i])},true);
+						for(var i in q[1])
+							showAResponse({cnt:q[1][i], type:typeof(q[1][i])},true);
 						break;
 					case 'warn':
 					case 'error':
-						showAnError(typeof(q.a[0])!=='undefined' ? q.a[0] : null, q.t);
+						showAnError(typeof(q[1][0])!=='undefined' ? q[1][0] : null, q[0]);
 						break;	
 				};	
 			}(q[j]));
