@@ -1,8 +1,5 @@
 Overall
 ==============
-- es6
-- babel register (?)
-- lint code
 - tests
 	- jest
 	- istanbul
@@ -10,7 +7,9 @@ Overall
 
 Server-side
 ===============
-- eslint
+- code separation
+- implement basic test cases
+- remove stringify
 - express
 - stringify
 - socket.io
@@ -18,6 +17,7 @@ Server-side
 
 Client-side
 ===============
+- eslint
 - remove fonticons (?)
 - separate interface modules
 - react?
