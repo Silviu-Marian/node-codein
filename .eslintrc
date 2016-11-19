@@ -6,10 +6,5 @@
 		"browser": true,
 		"node": true
 	},
-	"extends": [
-		"eslint:recommended"
-	],
-	"rules": {
-
-	}
+	"extends": "airbnb"
 }

@@ -1,263 +1,342 @@
-/* eslint no-console: 0, no-redeclare: 0 */
-var file_exists = function(f){ try{ require('fs').lstatSync(f); return true; }catch(e){ return false; }};
-var file_get_contents = function(f,mode){return (!file_exists(f))? '' : require('fs').readFileSync(f, mode); };
-var get_constr = function(v){ return(v===null)?"[object Null]":Object.prototype.toString.call(v); };
-var fnprefix  = 'TYPE_FUNC_'+(new Date().getTime());
-var stringify = require('./stringify.js');
-var jsencr = function(o){ var e = []; return stringify(o, function(k,v){
-	if(typeof(v)==='function') return fnprefix+v.toString();
-	if(typeof(v)!=='object' || v===null)	return v;
-	for(var i in e){ if(e[i]===v){ return "Circular"; }}
-	e.push(v); return v;
-}); };
+/* eslint no-console: 0, no-shadow: 0 */
+
+import fs from 'fs';
+import path from 'path';
+import qs from 'querystring';
+import http from 'http';
+import url from 'url';
+
+import stringify from './stringify';
 
 
-var dbg = {
+const fileExists = (f) => { try { fs.lstatSync(f); return true; } catch (e) { return false; } };
+const fileGetContents = (f, mode) => (fileExists(f) ? fs.readFileSync(f, mode) : '');
+const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
 
-	// AVOIDS RUNNING TWICE
-	isStarted: false,
+const fnprefix = `TYPE_FUNC_${Date.now()}`;
 
-	// SSE CONNECTIONS
-	cons: [],
+const jsencr = (o) => {
+  const e = [];
+  return stringify(o, (k, v) => {
+    // Function
+    if (typeof v === 'function') {
+      return `${fnprefix}${v.toString()}`;
+    }
 
-	// MIMES HANDLING
-	mimes: {
-		'html': 'text/html',
-		'htm' : 'text/html',
-		'txt' : 'text/plain',
-		'js' : 'text/javascript',
-		'ico' : 'image/vnd.microsoft.icon',
-		'css' : 'text/css',
-		'eot': 'application/vnd.bw-fontobject',
-		'ttf': 'application/x-font-ttf',
-		'woff':'font/opentype'
-	},
+    // Primitive value
+    if (typeof v !== 'object' || v === null) {
+      return v;
+    }
 
-	// SEND EVENT
-	queued: [],
-	pendingBroadcast: 0,
-	broadcastLag: 500,
-	broadcastSSE: function(t, a){
-		clearTimeout(dbg.pendingBroadcast);
+    // Object which has already been looped over (circularity)
+    const circularReferences = e.filter(item => item === v);
+    if (circularReferences.length) {
+      return 'Circular';
+    }
 
-		var data = { t:t, a:a };
-		dbg.queued.push(data);
+    // Any other object
+    e.push(v);
+    return v;
+  });
+};
 
-		var sendFn = function(){
-			if(!dbg.cons.length) return dbg.pendingBroadcast = setTimeout(function(){ sendFn(); },dbg.broadcastLag);
 
-			var data = jsencr(dbg.queued);
-			dbg.queued = [];
-			for(var i=0; i < dbg.cons.length; i++){
-				dbg.cons[i].writeHead(200,{
-					'Content-type':dbg.mimes['txt'],
-					'Content-length' : data.length,
-					'Cache-control':'no-cache'
-				});
+const dbg = {
+  // AVOIDS RUNNING TWICE
+  isStarted: false,
 
-				dbg.cons[i].write(data);
-				dbg.cons[i].end("\r\n");
-				dbg.cons[i] = null;
-				dbg.cons.splice(i,1);
-				i--;
-			}
-		};
+  // SSE CONNECTIONS
+  cons: [],
 
-		dbg.pendingBroadcast = setTimeout(function(){ sendFn(); },dbg.broadcastLag);
-	},
+  // MIMES HANDLING
+  mimes: {
+    html: 'text/html',
+    htm: 'text/html',
+    txt: 'text/plain',
+    js: 'text/javascript',
+    ico: 'image/vnd.microsoft.icon',
+    css: 'text/css',
+    eot: 'application/vnd.bw-fontobject',
+    ttf: 'application/x-font-ttf',
+    woff: 'font/opentype',
+  },
 
-	// ERROR HANDLERS
-	serve500: function(s, err){try{
-		console.warn(err);
+  // SEND EVENT
+  queued: [],
+  pendingBroadcast: 0,
+  broadcastLag: 500,
+  broadcastSSE(t, a) {
+    clearTimeout(dbg.pendingBroadcast);
 
-		var ISE = 'Internal server error\r\n'+err+'\r\n';
-		s.writeHead(404, {'Content-type':'text/plain', 'Content-length':ISE.length});
-		s.end(ISE);
+    const data = { t, a };
+    dbg.queued.push(data);
 
-	}catch(e){ console.warn(e); }},
+    const sendFn = () => {
+      if (!dbg.cons.length) {
+        dbg.pendingBroadcast = setTimeout(() => sendFn(), dbg.broadcastLag);
+        return;
+      }
 
-	serve404: function(s){try{
-		var NF = 'Not found\r\n';
-		s.writeHead(404, {'Content-type':'text/plain', 'Content-length':NF.length});
-		s.end(NF);
+      const data = jsencr(dbg.queued);
+      dbg.queued = [];
+      for (let i = 0; i < dbg.cons.length; i += 1) {
+        dbg.cons[i].writeHead(200, {
+          'Content-type': dbg.mimes.txt,
+          'Content-length': data.length,
+          'Cache-control': 'no-cache',
+        });
 
-	}catch(e){ dbg.serve500(s,e); }},
+        dbg.cons[i].write(data);
+        dbg.cons[i].end(`\r\n`);
+        dbg.cons[i] = null;
+        dbg.cons.splice(i, 1);
+        i -= 1;
+      }
+    };
 
-	// GET LOCAL FILENAME
-	getlocalfn: function(path){
-		var p = require('path').normalize(__dirname + "/../client/" + path);
-		return p;
-	},
+    dbg.pendingBroadcast = setTimeout(() => sendFn(), dbg.broadcastLag);
+  },
 
-	// STATIC RESOURCES
-	servestatic: function(q,s){ try{
-		var path = require('url').parse(q.url).pathname;
-		if(path.charAt(0)==='/') path = path.substr(1);
-		path = path.replace(/[\.]+(\/|\\)/gmi, '');
+  // ERROR HANDLERS
+  serve500(s, err) {
+    try {
+      console.warn(err);
 
-		switch(path){
-			case "":
-			case " ":
-			case "index.html" :
-			case "index.htm" :
-				var fn = dbg.getlocalfn('./index.html');
-				var c = file_get_contents(fn,'utf-8');
+      const ISE = `Internal server error\r\n${err}\r\n`;
+      s.writeHead(404, {
+        'Content-type': 'text/plain',
+        'Content-length': ISE.length,
+      });
+      s.end(ISE);
+    } catch (e) {
+      console.warn(e);
+    }
+  },
 
-				s.writeHead(200, {'Content-type': dbg.mimes['html'], 'Content-length': c.length});
-				s.end(c);
-				break;
+  serve404(s) {
+    try {
+      const NF = 'Not found\r\n';
+      s.writeHead(404, {
+        'Content-type': 'text/plain',
+        'Content-length': NF.length,
+      });
+      s.end(NF);
+    } catch (e) {
+      dbg.serve500(s, e);
+    }
+  },
 
-			case 'images/favicon.ico':
-				var icon = file_get_contents(dbg.getlocalfn('./images/favicon.ico'));
-				s.writeHead(200, {'Content-type': dbg.mimes['ico'], 'Content-length': icon.length});
-				s.end(icon);
-				break;
+  // GET LOCAL FILENAME
+  getlocalfn(filePath) {
+    return path.join(__dirname, '..', 'client', filePath);
+  },
 
-			case 'sse':
-				q.socket.setTimeout(0);
-				dbg.cons.push(s);
-				break;
+  // STATIC RESOURCES
+  servestatic(q, s) {
+    try {
+      let path = url.parse(q.url).pathname;
+      if (path.charAt(0) === '/') {
+        path = path.substr(1);
+      }
+      path = path.replace(/[.]+(\/|\\)/gmi, '');
 
-			default:
-				var fn = dbg.getlocalfn('./'+path);
-				if (!file_exists(fn)) {
-					return dbg.serve404(s);
-				}
+      switch (path) {
+        case '':
+        case ' ':
+        case 'index.html':
+        case 'index.htm': {
+          const fn = dbg.getlocalfn('./index.html');
+          const c = fileGetContents(fn, 'utf-8');
 
-				var c = file_get_contents(fn);
-				var hdrs = {'Content-length': c.length};
-				var ext = fn.split('.').pop();
+          s.writeHead(200, {
+            'Content-type': dbg.mimes.html,
+            'Content-length': c.length,
+          });
+          s.end(c);
+          break;
+        }
 
-				if(typeof(dbg.mimes[ext])==='string') hdrs['Content-type'] = dbg.mimes[ext];
+        case 'images/favicon.ico': {
+          const icon = fileGetContents(dbg.getlocalfn('./images/favicon.ico'));
+          s.writeHead(200, {
+            'Content-type': dbg.mimes.ico,
+            'Content-length': icon.length,
+          });
+          s.end(icon);
+          break;
+        }
 
-				s.writeHead(200, hdrs);
-				s.end(c);
-				break;
-		}
+        case 'sse': {
+          q.socket.setTimeout(0);
+          dbg.cons.push(s);
+          break;
+        }
 
-	}catch(e){ dbg.serve500(s,e); }},
+        default: {
+          const fn = dbg.getlocalfn(`./${path}`);
+          if (!fileExists(fn)) {
+            dbg.serve404(s);
+            return;
+          }
 
-	// EXECUTE COMMANDS
-	execute: function(q,s){
-		var post = '';
-		q.on('data', function(c){ post+=c; });
-		q.on('end', function(){
-			post = require('querystring').parse(post);
-			if(typeof(post.command)==='string'){
-				var r = {error:false};
+          const c = fileGetContents(fn);
+          const hdrs = { 'Content-length': c.length };
+          const ext = fn.split('.').pop();
 
-				try{
-					r.fnprefix = fnprefix;
-					r.cnt = eval.apply(global, [post.command]);
-					r.type = (typeof(r.cnt)==='object' && r.cnt!==null) ?
-						get_constr(r.cnt) :
-						typeof(r.cnt);
-				}catch(e){ r.error=e.toString(); }
+          if (typeof dbg.mimes[ext] === 'string') {
+            hdrs['Content-type'] = dbg.mimes[ext];
+          }
 
-				s.end(jsencr(r));
-			} else if(typeof(post.getsug)==='string'){
+          s.writeHead(200, hdrs);
+          s.end(c);
+          break;
+        }
+      }
+    } catch (e) {
+      dbg.serve500(s, e);
+    }
+  },
 
-				try{ var r = jsencr(dbg.getsug(JSON.parse(post.getsug)));	}
-				catch(e){ var r = "[]"; }
+  // EXECUTE COMMANDS
+  execute(q, s) {
+    let post = '';
+    q.on('data', (c) => { post += c; });
+    q.on('end', () => {
+      post = qs.parse(post);
+      if (typeof post.command === 'string') {
+        const r = { error: false };
 
-				s.writeHead(200, {'Content-type': dbg.mimes['txt'], 'Content-length': r.length});
-				s.end(r);
-			}else{
-				return dbg.serve500(s,'Command was not found');
-			}
-		});
-	},
+        try {
+          r.fnprefix = fnprefix;
+          r.cnt = eval.apply(global, [post.command]); // eslint-disable-line
+          r.type = (typeof r.cnt === 'object' && r.cnt !== null) ? getConstructor(r.cnt) : typeof r.cnt;
+        } catch (e) {
+          r.error = e.toString();
+        }
 
-	// STD. REQUEST HANDLER LOGIC
-	handle: function(q,s){
-		if(typeof(q.method)!=='string' || (q.method!=='GET' && q.method!=='POST'))
-			return dbg.serve404(s);
+        s.end(jsencr(r));
+      } else if (typeof post.getsug === 'string') {
+        let r = '[]';
+        try {
+          r = jsencr(dbg.getsug(JSON.parse(post.getsug)));
+        } catch (e) {
+          //
+        }
 
-		return  (q.method==='GET') ? dbg.servestatic(q,s) :  dbg.execute(q,s);
-	},
+        s.writeHead(200, {
+          'Content-type': dbg.mimes.txt,
+          'Content-length': r.length,
+        });
 
-	// GET SUGGESTIONS
-	getsug: function(o){
-		var r = [];
-		if(typeof(o)!=='object' || !o.length || o.length!=2) return r;
-		if(typeof(o[0])!=='string' || o[0]===''){
-			/* if(typeof(module)=='object') for(var i in module){
-				if(o[1]===''){ r.push(i); continue; };
-				if(i.split(o[1])[0]==='') r.push(i);
-			}; */
+        s.end(r);
+      } else {
+        dbg.serve500(s, 'Command was not found');
+      }
+    });
+  },
 
-			for(var i in global){
-				if(o[1]===''){ r.push(i); continue; }
-				if(i.split(o[1])[0]==='') r.push(i);
-			}
-		}else{try{
-			var tgt = eval(o[0]); if(typeof(tgt)!=='object') return r;
-			for(var i in tgt){
-				if(o[1]===''){ r.push(i); continue; }
-				if(i.split(o[1])[0]==='') r.push(i);
-			}
-		}catch(e){ return r; }}
-		return r;
-	},
+  // STD. REQUEST HANDLER LOGIC
+  handle(q, s) {
+    if (typeof q.method !== 'string' || (q.method !== 'GET' && q.method !== 'POST')) {
+      return dbg.serve404(s);
+    }
 
-	// WRAP CONSOLE.* API
-	consolewrap: function(){
-		console.__log = console.log;
-		console.log = function(){ console.__log.apply(console, arguments); dbg.broadcastSSE('log', arguments);};
+    return (q.method === 'GET') ? dbg.servestatic(q, s) : dbg.execute(q, s);
+  },
 
-		console.__info = console.info;
-		console.info = function(){ console.__info.apply(console, arguments); dbg.broadcastSSE('info', arguments);};
+  // GET SUGGESTIONS
+  getsug(o) {
+    const r = [];
+    if (typeof o !== 'object' || !o.length || o.length !== 2) {
+      return r;
+    }
 
-		console.__warn = console.warn;
-		console.warn = function(){ console.__warn.apply(console, arguments); dbg.broadcastSSE('warn', arguments);};
+    if (typeof o[0] !== 'string' || o[0] === '') {
+      /* if(typeof(module)=='object') for(var i in module){
+      if(o[1]===''){ r.push(i); continue; };
+      if(i.split(o[1])[0]==='') r.push(i);
+      }; */
 
-		console.__error = console.error;
-		console.error = function(){ console.__error.apply(console, arguments); dbg.broadcastSSE('error', arguments);};
+      // @TODO: weird logic, easy to refactor
+      Object.keys(global).forEach((i) => {
+        if (o[1] === '') {
+          r.push(i);
+        } else if (i.split(o[1])[0] === '') {
+          r.push(i);
+        }
+      });
+    } else {
+      try {
+        const tgt = eval(o[0]); // eslint-disable-line
+        if (typeof tgt !== 'object') {
+          return r;
+        }
 
-		process.on('uncaughtException', function (e) {console.error.call(console, e + ""); });
-		global.nodecodein = module;
-	},
+        // @TODO: weird logic, easy to refactor
+        Object.keys(tgt).forEach((i) => {
+          if (o[1] === '') {
+            r.push(i);
+          } else if (i.split(o[1])[0] === '') {
+            r.push(i);
+          }
+        });
+      } catch (e) { return r; }
+    }
+    return r;
+  },
 
-	// LOCAL DEBUGGER SERVER
-	start: function(port, host, cb){
+  // WRAP CONSOLE.* API
+  consolewrap() {
+    const wrapConsoleFeature = (key) => {
+      console[`__${key}`] = console[key];
+      console[key] = (...params) => {
+        console[`__${key}`](...params);
+        dbg.broadcastSSE('log', params);
+      };
+    };
 
-		cb = typeof(cb)==='function' ? cb : function(){};
-		if(dbg.isStarted) return cb.call(null,false);
+    ['log', 'info', 'warn', 'error'].forEach(item => wrapConsoleFeature(item));
 
-		var http = require('http');
-		dbg.sv = http.createServer(dbg.handle);
+    process.on('uncaughtException', e => console.error(`${e}`));
+    global.nodecodein = module;
+  },
 
-		dbg.sv.listen(port||55281, host||null,function(){
-			var add=dbg.sv.address();
-			console.log('Debugger server started at: http://' + add.address + ':' + add.port);
-			cb.call(null,dbg);
-		});
+  // LOCAL DEBUGGER SERVER
+  start({ port = 55281, host = null, cb = () => {} }) {
+    if (dbg.isStarted) {
+      cb(false); // @TODO: Promise API?
+      return;
+    }
 
-		dbg.sv.on('error', function(e){
-			console.warn('Failed to start debugger server. Error: '+e);
-		});
+    dbg.sv = http.createServer(dbg.handle);
 
-		dbg.consolewrap();
+    dbg.sv.listen(port, host, () => {
+      const { address, port } = dbg.sv.address();
+      console.log(`Debugger server started at: http://${address}:${port}`);
+      cb(dbg);
+    });
 
-		// free the port, on all ways of exiting the app
-		var events = ['exit','uncaughtException','SIGTERM','SIGKILL'];
-		for (var i in events){
-			process.on(i, function(){ dbg.stopproc(); });
-		}
-	},
-	stopproc: function(){
+    dbg.sv.on('error', e =>
+      console.warn(`Failed to start debugger server. Error: ${e}`));
 
-		console.log('Closing debug server');
-		try{
-			dbg.sv.close();
-		} catch(e) {
-			//
-		}
-	}
+    dbg.consolewrap();
+
+    // free the port, on all ways of exiting the app
+    ['exit', 'uncaughtException', 'SIGTERM', 'SIGKILL'].forEach(event =>
+      process.on(event, () => dbg.stopproc()));
+  },
+  stopproc() {
+    console.log('Closing debug server');
+    try {
+      dbg.sv.close();
+    } catch (e) {
+      //
+    }
+  },
 };
 
 dbg.start();
 
-setTimeout(function(){
-	console.log('aaaa');
+setTimeout(() => {
+  console.log('aaaa');
 }, 1000);
