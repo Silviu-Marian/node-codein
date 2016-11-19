@@ -2,8 +2,21 @@
   "author": "Silviu-Marian (http://www.github.com/Silviu-Marian/)",
   "name": "node-codein",
   "description": "NodeJS Console Object Debug Inspector",
-  "keywords": ["console","inspect","inspector","object","tree","outline","viewer","debug","debugger","webkit","runtime","eval"],
-  "version": "1.0.6",
+  "keywords": [
+    "console",
+    "inspect",
+    "inspector",
+    "object",
+    "tree",
+    "outline",
+    "viewer",
+    "debug",
+    "debugger",
+    "webkit",
+    "runtime",
+    "eval"
+  ],
+  "version": "1.0.7",
   "homepage": "https://github.com/Silviu-Marian/node-codein",
   "license": "MIT",
   "repository": {
