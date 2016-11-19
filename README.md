@@ -2,14 +2,11 @@
 <p>Or simply node-codein (longtail for SEO) is supposed to do what Webkit Inspector's Console does. Except this works exclusively with NodeJS.</p>
 <h2>Screenshot</h2>
 
-<img src="https://github.com/Silviu-Marian/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" /> 
-
-<h2>License</h2>
-<p>Released under MIT License (included); some components have their own licenses but I kept all the comments in their headers so if you're a really really boring person (lawyer, attorney, prosecutor, whatever) you can check the files under libraries/.</p>
+<img src="https://github.com/Silviu-Marian/node-codein/raw/master/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" />
 
 <h2>Requirements</h2>
 <p>Recommended: NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+ <br />
-	Minimum: any OS that supports a browser that supports javascript (my Nokia N8 almost worked lol)</p>
+	Minimum: any OS that supports a browser that supports javascript (my Nokia N8 almost worked)</p>
 <h2>Deployment instructions</h2>
 <ol>
 	<li>Install the package via <b>&quot;npm install node-codein&quot;</b>, then include it in your script with require(&quot;node-codein&quot;); alternatively</li>
@@ -17,7 +14,7 @@
 	<li>In your script add require(&quot;path/to/folder/node-codein&quot;)</li>
 	<li>Run nodejs</li>
 	<li>Start <b>%localappdata%/Google/Chrome/Application/chrome.exe --app=http://localhost:55281</b></li>
-	
+
 	<li>Make sure you only use Chrome. It might work on something else but going straight with Chrome will save you time.</li>
 </ol>
 
@@ -26,21 +23,21 @@
 	<li><b>v1.0.4</b><br /><ul>
 		<li>Added listeners to unbind the server on app crash (unhandledException, SIGTERM, SIGKILL)</li>
 	</ul></li>
-	
+
 	<li><b>v1.0.3</b><br /><ul>
 		<li>fixed incompatibility issues with expressjs and locomotive; special thanks to <a href="http://frantzmiccoli.com/" target="_blank">Fräntz Miccoli</a></li>
 	</ul></li>
 	<li> <b>v1.0.2</b> <br /><ul>
 		<li> fixed a bug on prefixed function content strings (thanks Evangenieur)</li>
 		<li> replaced iScroller with dragScrollable (less fancier but works on latest Chrome)</li>
-	</ul> </li>	
+	</ul> </li>
 	<li> <b>v1.0.1</b> <br /><ul>
 		<li> removed the buggy, CPU-clogging jsTree</li>
 		<li> updated UI colors </li>
 		<li> modified small real-estate features </li>
 		<li> added progressive rendering </li>
 		<li> exposed the whole module on <b>global.nodecodein</b> </li>
-	</ul> </li>	
+	</ul> </li>
 </ul>
 
 <h2>Main features</h2>
@@ -110,7 +107,7 @@
 	</li>
 	<li><b>What's wrong about the regular console?</b><br />
 	Its overall buffer size, no syntax coloring, hard to use, no direct input, so forth. If you're familar to webkit's &quot;Inspect Element&quot; console tab, you'll see there are some differences.</li>
-	<li><b>Then what's wrong with Eclipse's V8 Debugger?</b><br /> 
+	<li><b>Then what's wrong with Eclipse's V8 Debugger?</b><br />
 		A debugger is something totally different. Well not really but you still need to set breakpoints, stop executions, scope variables, etc. Plus you have to restart Node to put code in. I can make more excuses if necessary.	</li>
 	<li><b>Why not just fix node-inspector?</b><br />
 		I tried. I first tried to pass back stringified objects and decode them in the local console. The problem was that there was a hardcoded limit of 80 characters beyond which the string turned into &quot;str... (length: 2219)&quot;. I'm not sure where this came from but I believe it was built into v8 when it was compiled with Node. I also tried fixing scope:frame:handle problem but it seemed to pass back zeros no matter what. </li>
@@ -121,4 +118,3 @@
 <hr />
 <p>Good luck!
 </p>
-
