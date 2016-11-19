@@ -302,7 +302,7 @@ const dbg = {
   },
 
   // LOCAL DEBUGGER SERVER
-  start({ port = 55281, host = null, cb = () => {} }) {
+  start({ port = 55281, host = 'localhost', cb = () => {} } = {}) {
     if (dbg.isStarted) {
       cb(false); // @TODO: Promise API?
       return;
@@ -336,7 +336,3 @@ const dbg = {
 };
 
 dbg.start();
-
-setTimeout(() => {
-  console.log('aaaa');
-}, 1000);
