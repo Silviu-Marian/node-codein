@@ -19,5 +19,7 @@ Client-side
 
 Finally
 =============
+- bundle everything
+- remove all dependencies (only devDependencies should be left in)
 - update README
 - create CONTRIBUTING
