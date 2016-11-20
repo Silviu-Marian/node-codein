@@ -322,7 +322,7 @@ const dbg = {
     dbg.consolewrap();
 
     // free the port, on all ways of exiting the app
-    ['exit', 'uncaughtException', 'SIGTERM', 'SIGKILL'].forEach(event =>
+    ['exit', 'uncaughtException', 'SIGTERM'].forEach(event =>
       process.on(event, () => dbg.stopproc()));
   },
   stopproc() {

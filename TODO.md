@@ -1,7 +1,3 @@
-Overall
-==============
-- istanbul
-
 Server-side
 ===============
 - code separation
