@@ -6,10 +6,10 @@ import qs from 'querystring';
 import http from 'http';
 import url from 'url';
 
-import stringify from './stringify';
+import stringify from './utils/stringify';
+import fileExists from './utils/fileExists';
 
 
-const fileExists = (f) => { try { fs.lstatSync(f); return true; } catch (e) { return false; } };
 const fileGetContents = (f, mode) => (fileExists(f) ? fs.readFileSync(f, mode) : '');
 const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
 

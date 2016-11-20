@@ -1,9 +1,6 @@
 Overall
 ==============
-- tests
-	- jest
-	- istanbul
-
+- istanbul
 
 Server-side
 ===============

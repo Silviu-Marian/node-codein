@@ -26,14 +26,20 @@
   "bugs": "https://github.com/Silviu-Marian/node-codein/issues",
   "main": "src/index.js",
   "scripts": {
-    "start": "node ./"
+    "start": "node ./",
+    "test": "mocha --watch --compilers js:babel-core/register ./src/**/*.test.js",
+    "coverage": "istanbul cover --dir ./.coverage ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register ./src/**/*.test.js --colors"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.7.1"
+    "eslint-plugin-mocha": "^4.7.0",
+    "eslint-plugin-react": "^6.7.1",
+    "istanbul": "^1.0.0-alpha.2",
+    "mocha": "^3.1.2"
   },
   "dependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.4",

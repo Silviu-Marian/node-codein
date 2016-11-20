@@ -4,7 +4,24 @@
 	},
 	"env": {
 		"browser": true,
-		"node": true
+		"node": true,
+    "mocha": true
 	},
-	"extends": "airbnb"
+	"extends": "airbnb",
+  "plugins": [
+    "mocha"
+  ],
+  "rules": {
+
+    // Tests
+    "mocha/no-exclusive-tests": "error",
+    "mocha/no-skipped-tests": "error",
+    "mocha/handle-done-callback": "error",
+    "mocha/no-global-tests": "error",
+    "mocha/no-return-and-callback": "error",
+    "mocha/no-hooks": "error",
+    "mocha/no-identical-title": "error",
+    "mocha/no-nested-tests": "error",
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.js", "**/*.test.jsx"]}]
+  }
 }
