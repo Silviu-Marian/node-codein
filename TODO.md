@@ -2,12 +2,11 @@ Server-side
 ===============
 - code separation
 - implement basic test cases
-- remove stringify
 - express
-- stringify
+- remove stringify
 - socket.io
 - export some APIs (?)
-
+- handle undefined
 
 Client-side
 ===============

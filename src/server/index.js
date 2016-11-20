@@ -6,40 +6,13 @@ import qs from 'querystring';
 import http from 'http';
 import url from 'url';
 
-import stringify from './utils/stringify';
+import jsonEncode from './utils/jsonEncode';
 import fileExists from './utils/fileExists';
-
 
 const fileGetContents = (f, mode) => (fileExists(f) ? fs.readFileSync(f, mode) : '');
 const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
 
 const fnprefix = `TYPE_FUNC_${Date.now()}`;
-
-const jsencr = (o) => {
-  const e = [];
-  return stringify(o, (k, v) => {
-    // Function
-    if (typeof v === 'function') {
-      return `${fnprefix}${v.toString()}`;
-    }
-
-    // Primitive value
-    if (typeof v !== 'object' || v === null) {
-      return v;
-    }
-
-    // Object which has already been looped over (circularity)
-    const circularReferences = e.filter(item => item === v);
-    if (circularReferences.length) {
-      return 'Circular';
-    }
-
-    // Any other object
-    e.push(v);
-    return v;
-  });
-};
-
 
 const dbg = {
   // AVOIDS RUNNING TWICE
@@ -77,7 +50,7 @@ const dbg = {
         return;
       }
 
-      const data = jsencr(dbg.queued);
+      const data = jsonEncode(dbg.queued, fnprefix);
       dbg.queued = [];
       for (let i = 0; i < dbg.cons.length; i += 1) {
         dbg.cons[i].writeHead(200, {
@@ -214,11 +187,11 @@ const dbg = {
           r.error = e.toString();
         }
 
-        s.end(jsencr(r));
+        s.end(jsonEncode(r, fnprefix));
       } else if (typeof post.getsug === 'string') {
         let r = '[]';
         try {
-          r = jsencr(dbg.getsug(JSON.parse(post.getsug)));
+          r = jsonEncode(dbg.getsug(JSON.parse(post.getsug)), fnprefix);
         } catch (e) {
           //
         }
@@ -252,11 +225,6 @@ const dbg = {
     }
 
     if (typeof o[0] !== 'string' || o[0] === '') {
-      /* if(typeof(module)=='object') for(var i in module){
-      if(o[1]===''){ r.push(i); continue; };
-      if(i.split(o[1])[0]==='') r.push(i);
-      }; */
-
       // @TODO: weird logic, easy to refactor
       Object.keys(global).forEach((i) => {
         if (o[1] === '') {

@@ -1,9 +1,9 @@
-//
-// Public domain
-// This whole code come from Douglas Crockford's JSON2 library except some
-// minor change on the first line of the str() function (see next comment)
-//
-//
+
+/**
+ * Public domain
+ * This whole code came from Douglas Crockford's JSON2 library except some
+ * minor change on the first line of the str() function (see next comment)
+ */
 const escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g; // eslint-disable-line
 const meta = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"': '\\"', '\\': '\\\\' };
 
@@ -16,13 +16,12 @@ function quote(string) {
 }
 
 function str(key, holder, rep) {
-  //
-  // Changes from Douglas Crockford's version, the five next code lines
-  // avoid errors when accessing a value through a getter that raise an
-  // ulgy error
-  // previously: value = holder[key];
-  //
-
+  /**
+   * Changes from Douglas Crockford's version, the five next code lines
+   * avoid errors when accessing a value through a getter that raise an
+   * ulgy error
+   * previously: value = holder[key];
+   */
   let value = 'accessor error';
   try {
     value = holder[key];
@@ -31,11 +30,15 @@ function str(key, holder, rep) {
   }
 
   if (value && typeof value.toJSON === 'function') {
-    value = value.toJSON(key);
+    try {
+      value = value.toJSON(key);
+    } catch (e) {
+      //
+    }
   }
 
   if (typeof rep === 'function') {
-    value = rep.call(holder, key, value);
+    value = rep(key, value);
   }
 
   switch (typeof value) {
@@ -45,20 +48,22 @@ function str(key, holder, rep) {
     case 'number':
       return isFinite(value) ? String(value) : 'null';
 
+    case 'undefined':
+      return 'undefined';
+
     case 'boolean':
       return String(value);
 
-
     case 'object': {
       if (value === null) {
-        return String(value);
+        return 'null';
       }
       const partial = [];
 
       if (Object.prototype.toString.apply(value) === '[object Array]') {
         const length = value.length;
         for (let i = 0; i < length; i += 1) {
-          partial[i] = str(i, value);
+          partial[i] = str(i, value, rep);
         }
 
         const interv = `[${partial.join(',')}]`;
@@ -67,20 +72,27 @@ function str(key, holder, rep) {
       }
 
       Object.keys(value).forEach((k) => {
-        partial.push(`${quote(k)}:${str(k, value)}`);
+        partial.push(`${quote(k)}:${str(k, value, rep)}`);
       });
 
       const interv = `{${partial.join(',')}}`;
       const v = partial.length === 0 ? '{}' : interv;
       return v;
     }
-    default:
-      return String(value);
+    default: {
+      let r = `"[${typeof value}]"`;
+      try {
+        r = `${value}`;
+      } catch (e) {
+        //
+      }
+      return r;
+    }
   }
 }
 
-export default function stringify(value, replacer) {
-  if (replacer && typeof replacer !== 'function') {
+export default function stringify(value, replacer = (k, v) => v) {
+  if (typeof replacer !== 'function') {
     throw new Error('JSON.stringify');
   }
 
