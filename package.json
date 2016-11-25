@@ -26,7 +26,7 @@
   "bugs": "https://github.com/Silviu-Marian/node-codein/issues",
   "main": "src/index.js",
   "scripts": {
-    "start": "node ./",
+    "start": "npm outdated && nodemon ./",
     "test": "mocha --watch --compilers js:babel-core/register ./src/**/*.test.js",
     "coverage": "istanbul cover --dir ./.coverage ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register ./src/**/*.test.js --colors"
   },
@@ -39,7 +39,8 @@
     "eslint-plugin-mocha": "^4.7.0",
     "eslint-plugin-react": "^6.7.1",
     "istanbul": "^1.0.0-alpha.2",
-    "mocha": "^3.1.2"
+    "mocha": "^3.1.2",
+    "nodemon": "1.11.0"
   },
   "dependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -48,6 +49,7 @@
     "babel-preset-es2015-loose": "^8.0.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
-    "babel-register": "^6.18.0"
+    "babel-register": "^6.18.0",
+    "express": "4.14.0"
   }
 }
