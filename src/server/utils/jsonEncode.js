@@ -1,5 +1,7 @@
 import stringify from './stringify';
 
+// @TODO: support additional ES6 types (?)
+// @TODO: every value transmitted should (probably) be an object { type, ctor, value, prototype }
 export default function jsonEncode(o, fnprefix) {
   const e = [];
   return stringify(o, (k, v) => {

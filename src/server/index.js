@@ -1,8 +1,10 @@
 /* eslint no-console: 0, no-shadow: 0 */
 
-import path from 'path';
 
+import path from 'path';
 import express from 'express';
+import compression from 'compression';
+
 import jsonEncode from './utils/jsonEncode';
 
 const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
@@ -60,13 +62,15 @@ function getSuggestions(o) {
   let target = global;
   if (o[0]) {
     try {
+      // @TODO: some validation,
+      // @TODO: paths should begin at global
       target = eval(o[0]); // eslint-disable-line
     } catch (e) {
       target = {};
     }
   }
 
-  // @TODO: better property enumeration, prefferably one that sees setters/getters and prototypes
+  // @TODO: better property enumeration, prefferably one that sees setters/getters, prototypes etc
   return Object.keys(target).filter(item => !o[1] || (o[1] && item.split(o[1])[0] === ''));
 }
 
@@ -85,7 +89,7 @@ function getSuggestions(o) {
  * Express App
  */
 const app = express();
-
+app.use(compression());
 
 /**
  * Add Clients on Queue

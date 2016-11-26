@@ -1,9 +1,8 @@
 Server-side
 ===============
+- remove stringify
 - code separation
 - implement basic test cases
-- express
-- remove stringify
 - socket.io
 - export some APIs (?)
 - handle undefined
@@ -30,3 +29,4 @@ Ideas
 =============
 - react-native app
 - read QR code - connect to console automatically if on same network
+- allow access to context (require('node-codein')({ ...options }));
