@@ -24,6 +24,7 @@ Finally
 - remove all dependencies (only devDependencies should be left in)
 - update README
 - create CONTRIBUTING guide
+- update CHANGELOG (externalize from TODO)
 
 Ideas
 =============
