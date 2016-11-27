@@ -26,23 +26,12 @@
   "bugs": "https://github.com/Silviu-Marian/node-codein/issues",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm outdated && nodemon ./",
+    "start": "npm outdated && nodemon ./bin/dev",
     "test": "mocha --watch --compilers js:babel-core/register ./src/**/*.test.js",
     "coverage": "istanbul cover --dir ./.coverage ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register ./src/**/*.test.js --colors"
   },
   "devDependencies": {
-    "chai": "3.5.0",
-    "eslint": "3.10.2",
-    "eslint-config-airbnb": "13.0.0",
-    "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "2.2.3",
-    "eslint-plugin-mocha": "4.7.0",
-    "eslint-plugin-react": "6.7.1",
-    "istanbul": "1.0.0-alpha.2",
-    "mocha": "3.1.2",
-    "nodemon": "1.11.0"
-  },
-  "dependencies": {
+    "babel-loader": "6.2.8",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-plugin-transform-export-extensions": "6.8.0",
     "babel-preset-es2015": "6.18.0",
@@ -50,7 +39,24 @@
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
     "babel-register": "6.18.0",
+    "chai": "3.5.0",
     "compression": "1.6.2",
-    "express": "4.14.0"
+    "copy-webpack-plugin": "4.0.1",
+    "eslint": "3.10.2",
+    "eslint-config-airbnb": "13.0.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-mocha": "4.7.0",
+    "eslint-plugin-react": "6.7.1",
+    "express": "4.14.0",
+    "html-webpack-plugin": "2.24.1",
+    "istanbul": "1.0.0-alpha.2",
+    "json-loader": "0.5.4",
+    "mkpath": "1.0.0",
+    "mocha": "3.1.2",
+    "nodemon": "1.11.0",
+    "progress-bar-webpack-plugin": "1.9.0",
+    "rimraf": "2.5.4",
+    "webpack": "2.1.0-beta.27"
   }
 }

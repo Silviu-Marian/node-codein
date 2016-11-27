@@ -1,18 +1,11 @@
-Server-side
-===============
-- code separation
-- implement basic test cases
-- socket.io
-- export some APIs (?)
-- handle undefined
-
 Client-side
 ===============
-- eslint
+- implement state manager
 - remove fonticons (?)
+- add svg as background images (?)
 - separate interface modules
 - react?
-- foundation?
+- material-ui?
 - handle \t characters in console (indentation)
 - profile
 
@@ -30,3 +23,7 @@ Ideas
 - react-native app
 - read QR code - connect to console automatically if on same network
 - allow access to context (require('node-codein')({ ...options }));
+- allow configuring host/port
+- support colored console messages
+- socket.io
+- export some APIs (?)

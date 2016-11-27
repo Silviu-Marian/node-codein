@@ -48,15 +48,16 @@ $(document).ready(function () {
 
           for (var j = 0; j < q.length; j += 1) {
             (function (q) {
-              if (typeof q.t !== 'string') return;
-              switch (q.t) {
+              var contents = q.contents;
+              var type = q.type;
+              switch (type) {
                 case 'log':
                 case 'info':
-                  showAResponse(q.a);
+                  showAResponse(contents);
                   break;
                 case 'warn':
                 case 'error':
-                  showAnError(typeof q.a !== 'undefined' ? q.a.value : '', q.t);
+                  showAnError(typeof contents === 'object' ? contents.value : contents, type);
                   break;
                 default:
                   break;

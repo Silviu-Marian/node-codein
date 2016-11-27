@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import serialize from './serialize';
 
-describe('jsonEncode - Custom JSON.stringify API', () => {
+describe('serialize - Converts any value to a (potentially very large) descriptor', () => {
   // undefined, number, string, boolean, symbol
   it('should handle primitives', () => {
     const r = serialize({ undefined, number: 2, string: 'xxx', true: true, false: false, symbol: Symbol('a'), function: () => {} });

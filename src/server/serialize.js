@@ -94,6 +94,7 @@ function serializePrimitive(key, val, refs) {
     frozen: (typeof val === 'object' && val !== null && Object.isFrozen(val)) || undefined,
     sealed: (typeof val === 'object' && val !== null && Object.isSealed(val)) || undefined,
     ctor: (typeof val === 'object' && getConstructor(val)) || undefined, // ctor
+    // @TODO: prototype
   };
 }
 

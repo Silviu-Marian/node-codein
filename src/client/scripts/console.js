@@ -103,7 +103,7 @@ $(document).ready(function () {
 
         insertOriginalCommand();
 
-        showAResponse(pa.cnt);
+        showAResponse(pa.result);
         return '';
       },
     });
