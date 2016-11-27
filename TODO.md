@@ -11,7 +11,7 @@ Client-side
 
 Finally
 =============
-- bundle everything (webpack?)
+- proper build system (webpack - publish dist/ only)
 - remove babel-register
 - remove all dependencies (only devDependencies should be left in)
 - update README

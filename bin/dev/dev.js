@@ -11,7 +11,7 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-const ROOT = path.join(__dirname, '..');
+const ROOT = path.join(__dirname, '..', '..');
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
 const CLIENT = path.join(DIST, 'client');
@@ -24,7 +24,7 @@ mkpath(CACHE);
 const appConfig = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json')));
 
 const babelConfig = JSON.stringify({
-  ...JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.babelrc'), 'utf-8')),
+  ...JSON.parse(fs.readFileSync(path.join(ROOT, '.babelrc'), 'utf-8')),
   cacheDirectory: CACHE,
 });
 
@@ -39,6 +39,7 @@ const commonConfig = {
     new ProgressBarPlugin(),
   ],
 };
+
 
 /**
  * Client
@@ -60,7 +61,7 @@ webpack({
       defaultTitle: appConfig.name,
       template: path.join(SRC, 'client', 'index.html'),
       filename: path.join(CLIENT, 'index.html'),
-      favicon: path.join(SRC, 'client', 'images', 'favicon.ico'),
+      favicon: path.join(SRC, 'client', 'favicon.ico'),
       inject: false,
     }),
 
@@ -72,6 +73,7 @@ webpack({
 }).watch({ }, () => {
   //
 });
+
 
 /**
  * Server

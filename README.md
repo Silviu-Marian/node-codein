@@ -1,7 +1,7 @@
 <h1>NodeJS Console Object Debug Inspector </h1>
 <p>Or simply node-codein (longtail for SEO) is supposed to do what Webkit Inspector's Console does. Except this works exclusively with NodeJS.</p>
 <h2>Screenshot</h2>
-
+<img src="https://github.com/Silviu-Marian/node-codein/blob/master/screenshot.png" alt="NodeJS Console Object Debug Inspector" />
 
 <h2>Requirements</h2>
 <p>Recommended: NodeJS v0.8.0+, Chrome 19.xx.xxxx.xx+ <br />
