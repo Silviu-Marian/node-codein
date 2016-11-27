@@ -1,6 +1,5 @@
 Server-side
 ===============
-- remove stringify
 - code separation
 - implement basic test cases
 - socket.io
