@@ -39,10 +39,10 @@ function getValue(key, val, refs) {
             const descr = Object.getOwnPropertyDescriptor(val, subKey);
             const data = serializePrimitive(subKey, value, refs); // eslint-disable-line
             returnValue[subKey] = {
-              R: (!descr.writable && 1) || undefined, // read only
-              C: (!!descr.configurable && 1) || undefined,
-              G: (descr.get && descr.get.toString()) || undefined,
-              S: (descr.set && descr.set.toString()) || undefined,
+              readOnly: (!descr.writable && 1) || undefined, // read only
+              configLocked: (!descr.configurable && 1) || undefined,
+              getter: (descr.get && descr.get.toString()) || undefined,
+              setter: (descr.set && descr.set.toString()) || undefined,
               ...data,
             };
           });
@@ -86,12 +86,14 @@ function serializePrimitive(key, val, refs) {
   }
 
   return {
-    t: typeof val, // type
-    r: refId, // circular reference
-    k: key, // key
-    v: !isCircular ? getValue(key, val, refs) : undefined, // value
-    e: (typeof val === 'object' && val !== null && !!Object.isExtensible(val)) || undefined, // extensible
-    c: (typeof val === 'object' && getConstructor(val)) || undefined, // ctor
+    type: typeof val, // type
+    reference: refId, // circular reference
+    key, // key
+    value: !isCircular ? getValue(key, val, refs) : undefined, // value
+    extensibiltyLocked: (typeof val === 'object' && val !== null && !Object.isExtensible(val)) || undefined,
+    frozen: (typeof val === 'object' && val !== null && Object.isFrozen(val)) || undefined,
+    sealed: (typeof val === 'object' && val !== null && Object.isSealed(val)) || undefined,
+    ctor: (typeof val === 'object' && getConstructor(val)) || undefined, // ctor
   };
 }
 

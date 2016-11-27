@@ -6,6 +6,7 @@ import express from 'express';
 import compression from 'compression';
 
 import jsonEncode from './utils/jsonEncode';
+import serialize from './serialize';
 
 const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
 const functionPrefix = `TYPE_FUNC_${Date.now()}`; // @TODO: explicit type parameter might help
@@ -122,6 +123,7 @@ app.route('/getSuggestions').post((req, res) => {
 /**
  * Executes console commands (via eval)
  */
+// @TODO: remove this
 app.route('/execute').post((req, res) => {
   let command = '';
   req.on('data', (c) => { command += c; });
@@ -137,6 +139,28 @@ app.route('/execute').post((req, res) => {
     }
 
     res.end(jsonEncode(r, functionPrefix));
+  });
+});
+
+
+/**
+ * v2 Execute
+ */
+module.mockData = require('./serialize.mock').default;
+
+app.route('/v2/execute').post((req, res) => { // @TODO: rename the route
+  let command = '';
+  req.on('data', (c) => { command += c; });
+  req.on('end', () => {
+    const r = { error: false };
+
+    try {
+      r.cnt = serialize(eval.apply(global, [command])); // eslint-disable-line
+    } catch (e) {
+      r.error = e.toString();
+    }
+
+    res.end(JSON.stringify(r));
   });
 });
 

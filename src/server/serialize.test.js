@@ -6,83 +6,83 @@ describe('jsonEncode - Custom JSON.stringify API', () => {
   it('should handle primitives', () => {
     const r = serialize({ undefined, number: 2, string: 'xxx', true: true, false: false, symbol: Symbol('a'), function: () => {} });
 
-    expect(r.v.undefined.v).to.equal();
-    expect(r.v.undefined.t).to.equal('undefined');
-    expect(r.v.number.v).to.equal('2');
-    expect(r.v.number.t).to.equal('number');
-    expect(r.v.string.v).to.equal('xxx');
-    expect(r.v.string.t).to.equal('string');
-    expect(r.v.true.v).to.equal(1);
-    expect(r.v.false.v).to.equal();
-    expect(r.v.true.t).to.equal('boolean');
-    expect(r.v.false.t).to.equal('boolean');
-    expect(r.v.symbol.t).to.equal('symbol');
-    expect(r.v.symbol.v).to.equal('Symbol(a)');
-    expect(r.v.function.t).to.equal('function');
-    expect(typeof r.v.function.v).to.equal('string');
+    expect(r.value.undefined.value).to.equal();
+    expect(r.value.undefined.type).to.equal('undefined');
+    expect(r.value.number.value).to.equal('2');
+    expect(r.value.number.type).to.equal('number');
+    expect(r.value.string.value).to.equal('xxx');
+    expect(r.value.string.type).to.equal('string');
+    expect(r.value.true.value).to.equal(1);
+    expect(r.value.false.value).to.equal();
+    expect(r.value.true.type).to.equal('boolean');
+    expect(r.value.false.type).to.equal('boolean');
+    expect(r.value.symbol.type).to.equal('symbol');
+    expect(r.value.symbol.value).to.equal('Symbol(a)');
+    expect(r.value.function.type).to.equal('function');
+    expect(typeof r.value.function.value).to.equal('string');
   });
 
   it('should handle +Infinity, -Infinity, null and NaN', () => {
     const r = serialize({ pos: Infinity, neg: -Infinity, null: null, NaN });
-    expect(r.v.pos.v).to.equal('Infinity');
-    expect(r.v.pos.t).to.equal('number');
-    expect(r.v.neg.v).to.equal('-Infinity');
-    expect(r.v.neg.t).to.equal('number');
-    expect(r.v.null.t).to.equal('object');
-    expect(r.v.null.v).to.equal(null);
-    expect(r.v.NaN.v).to.equal('NaN');
-    expect(r.v.NaN.t).to.equal('number');
+    expect(r.value.pos.value).to.equal('Infinity');
+    expect(r.value.pos.type).to.equal('number');
+    expect(r.value.neg.value).to.equal('-Infinity');
+    expect(r.value.neg.type).to.equal('number');
+    expect(r.value.null.type).to.equal('object');
+    expect(r.value.null.value).to.equal(null);
+    expect(r.value.NaN.value).to.equal('NaN');
+    expect(r.value.NaN.type).to.equal('number');
   });
 
   // empty array, array of mixed primitives
   it('should handle Array', () => {
     const r = serialize({ emptyArray: [], array: [1, 2, 'a', null, 'x'] });
 
-    expect(r.v.emptyArray.t).to.equal('object');
-    expect(r.v.array.t).to.equal('object');
-    expect(r.v.array.v[0].v).to.equal('1');
-    expect(r.v.array.v[Object.keys(r.v.array.v).length - 1].v).to.equal('x');
-    expect(r.v.array.v[Object.keys(r.v.array.v).length - 1].t).to.equal('string');
+    expect(r.value.emptyArray.type).to.equal('object');
+    expect(r.value.array.type).to.equal('object');
+    expect(r.value.array.value[0].value).to.equal('1');
+    expect(r.value.array.value[Object.keys(r.value.array.value).length - 1].value).to.equal('x');
+    expect(r.value.array.value[Object.keys(r.value.array.value).length - 1].type).to.equal('string');
   });
 
   it('should handle RegExp, Date, etc.', () => {
     const d = new Date();
     const r = serialize({ WeakMap: new WeakMap(), Date: d, RegExp: /[A-Za-z0-9]+/gi });
-    expect(r.v.WeakMap.c).to.equal('WeakMap');
-    expect(r.v.Date.v).to.equal(d.toString());
-    expect(r.v.RegExp.c).to.equal('RegExp');
+    expect(r.value.WeakMap.ctor).to.equal('WeakMap');
+    expect(r.value.Date.value).to.equal(d.toString());
+    expect(r.value.RegExp.ctor).to.equal('RegExp');
   });
 
-  it('should handle setters/getters and custom properties (writable, configurable, extensible)', () => {
+  it('should handle setters/getters and custom properties (writable, configurable)', () => {
     const testObj = {
       get x() { return 2; },
       set x(x) { return x; },
     };
-    Object.defineProperty(testObj, 'testProp1', { enumerable: true, writable: false, configurable: false });
-    Object.defineProperty(testObj, 'testProp2', { enumerable: true, writable: true, configurable: true });
+    Object.defineProperty(testObj, 'testProp1', { enumerable: true, writable: false, configurable: true });
+    Object.defineProperty(testObj, 'testProp2', { enumerable: true, writable: true, configurable: false });
 
     const r = serialize(testObj);
-    expect(r.v.testProp1.R).to.equal(1);
-    expect(r.v.testProp2.C).to.equal(1);
-    expect(typeof r.v.x.S).to.equal('string');
-    expect(typeof r.v.x.G).to.equal('string');
+    expect(r.value.testProp1.readOnly).to.equal(1);
+    expect(r.value.testProp2.configLocked).to.equal(1);
+    expect(typeof r.value.x.setter).to.equal('string');
+    expect(typeof r.value.x.getter).to.equal('string');
   });
 
   it('should handle custom constructors', () => {
     const MyType = () => {};
     const testObj = new MyType();
     const r = serialize(testObj);
-    expect(r.c).to.equal('MyType');
+    expect(r.ctor).to.equal('MyType');
 
     const x = {};
     x.constructor = {};
     const rx = serialize(x);
-    expect(rx.c).to.equal(x.constructor.toString());
+    expect(rx.ctor).to.equal(x.constructor.toString());
 
     const y = {};
     y.constructor = undefined;
     const ry = serialize(y);
-    expect(ry.c).to.equal('undefined');
+    expect(ry.ctor).to.equal('undefined');
   });
 
   it('should handle circular references', () => {
@@ -93,6 +93,6 @@ describe('jsonEncode - Custom JSON.stringify API', () => {
     b.a = a;
     b.b = b;
     const r = serialize({ a, b });
-    expect(r.v.a.v.a.v).to.equal();
+    expect(r.value.a.value.a.value).to.equal();
   });
 });
