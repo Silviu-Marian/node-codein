@@ -5,11 +5,7 @@ import path from 'path';
 import express from 'express';
 import compression from 'compression';
 
-import jsonEncode from './utils/jsonEncode';
 import serialize from './serialize';
-
-const getConstructor = v => (v === null ? '[object Null]' : Object.prototype.toString.call(v));
-const functionPrefix = `TYPE_FUNC_${Date.now()}`; // @TODO: explicit type parameter might help
 
 // @TODO: support additional ES6 types (?)
 // @TODO: every value transmitted should (probably) be an object { type, ctor, value, prototype }
@@ -35,7 +31,7 @@ function pushMessage(t, a) {
   queued.push(data);
 
   const doSend = () => {
-    const data = jsonEncode(queued, functionPrefix);
+    const data = JSON.stringify(queued);
     clients.forEach(client => client.send(data));
     queued = [];
     clients = [];
@@ -82,7 +78,9 @@ function getSuggestions(o) {
   console[`__${key}`] = console[key];
   console[key] = (...params) => {
     console[`__${key}`](...params);
-    pushMessage(key, params);
+    params.forEach((param) => {
+      pushMessage(key, serialize(param));
+    });
   };
 });
 
@@ -111,7 +109,7 @@ app.route('/getSuggestions').post((req, res) => {
     let r = '[]';
     try {
       const suggestions = getSuggestions(JSON.parse(data));
-      r = jsonEncode(suggestions, functionPrefix);
+      r = JSON.stringify(suggestions);
     } catch (e) {
       //
     }
@@ -121,34 +119,9 @@ app.route('/getSuggestions').post((req, res) => {
 
 
 /**
- * Executes console commands (via eval)
- */
-// @TODO: remove this
-app.route('/execute').post((req, res) => {
-  let command = '';
-  req.on('data', (c) => { command += c; });
-  req.on('end', () => {
-    const r = { error: false };
-
-    try {
-      r.functionPrefix = functionPrefix;
-      r.cnt = eval.apply(global, [command]); // eslint-disable-line
-      r.type = (typeof r.cnt === 'object' && r.cnt !== null) ? getConstructor(r.cnt) : typeof r.cnt;
-    } catch (e) {
-      r.error = e.toString();
-    }
-
-    res.end(jsonEncode(r, functionPrefix));
-  });
-});
-
-
-/**
  * v2 Execute
  */
-module.mockData = require('./serialize.mock').default;
-
-app.route('/v2/execute').post((req, res) => { // @TODO: rename the route
+app.route('/execute').post((req, res) => {
   let command = '';
   req.on('data', (c) => { command += c; });
   req.on('end', () => {
@@ -216,4 +189,6 @@ process.on('uncaughtException', (e) => {
 /**
  * Expose the module, access to module.require
  */
+module.mockData = require('./serialize.mock').default;
+
 global.nodecodein = module;

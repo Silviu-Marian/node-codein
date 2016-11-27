@@ -52,13 +52,11 @@ $(document).ready(function () {
               switch (q.t) {
                 case 'log':
                 case 'info':
-                  for (var i in q.a) { // eslint-disable-line
-                    showAResponse({ cnt: q.a[i], type: typeof q.a[i] }, true);
-                  }
+                  showAResponse(q.a);
                   break;
                 case 'warn':
                 case 'error':
-                  showAnError(typeof q.a[0] !== 'undefined' ? q.a[0] : null, q.t);
+                  showAnError(typeof q.a !== 'undefined' ? q.a.value : '', q.t);
                   break;
                 default:
                   break;

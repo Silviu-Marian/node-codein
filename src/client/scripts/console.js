@@ -58,22 +58,8 @@ $(document).ready(function () {
 
   window.showAResponse = function (r) {
     var resp = $('<div class="output"></div>').appendTo(vw);
-    var tpo = typeof r.cnt;
-    if (typeof r.functionPrefix === 'string') {
-      window.fnprefix = r.functionPrefix;
-    }
-    if (r.cnt === null) {
-      tpo = 'null';
-    }
+    $(renderAny(r, $('.autoexpand').is('.sel'))).appendTo(resp);
 
-    switch (tpo) {
-      case 'object':
-        createTreeFromObj({ '[object Object]': r.cnt }, $('.autoexpand').is('.sel')).appendTo(resp);
-        break;
-      default:
-        $(formatStaticValue(r.cnt, false)).appendTo(resp);
-        break;
-    }
     focusLastMessage();
   };
 
@@ -86,7 +72,7 @@ $(document).ready(function () {
     }
 
     $.ajax({
-      url: '/v2/execute',
+      url: '/execute',
       type: 'POST',
       dataType: 'json',
       data: v,
@@ -117,10 +103,7 @@ $(document).ready(function () {
 
         insertOriginalCommand();
 
-        var resp = $('<div class="output"></div>').appendTo(vw);
-        $(renderAny(pa.cnt, $('.autoexpand').is('.sel'))).appendTo(resp);
-
-        focusLastMessage();
+        showAResponse(pa.cnt);
         return '';
       },
     });
