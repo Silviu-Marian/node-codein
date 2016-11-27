@@ -24,7 +24,7 @@
     "url": "git://github.com/Silviu-Marian/node-codein.git"
   },
   "bugs": "https://github.com/Silviu-Marian/node-codein/issues",
-  "main": "src/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "start": "npm outdated && nodemon ./bin/dev",
     "test": "mocha --watch --compilers js:babel-core/register ./src/**/*.test.js",
