@@ -1,4 +1,4 @@
-import serialize from '../serialize';
+import serialize from 'server/utils/serialize';
 
 /**
  * Clients queue

@@ -12,7 +12,6 @@
     "mocha"
   ],
   "rules": {
-
     // Tests
     "mocha/no-exclusive-tests": "error",
     "mocha/no-skipped-tests": "error",
@@ -23,5 +22,17 @@
     "mocha/no-identical-title": "error",
     "mocha/no-nested-tests": "error",
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": {
+          "resolve": {
+            "modules": ["node_modules", "./src"],
+            "extensions": [".json", ".js", ".jsx"]
+          }
+        }
+      }
+    }
   }
 }

@@ -35,6 +35,10 @@ const commonConfig = {
       { test: /\.json$/i, loader: 'json-loader' },
     ],
   },
+  resolve: {
+    modules: ['node_modules', SRC],
+    extensions: ['.json', '.js', '.jsx'],
+  },
   plugins: [
     new ProgressBarPlugin(),
   ],

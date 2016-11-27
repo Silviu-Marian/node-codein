@@ -1,4 +1,4 @@
-import serialize from '../serialize';
+import serialize from 'server/utils/serialize';
 
 export default function executeCommand(req, res) {
   let command = '';

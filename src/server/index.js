@@ -3,11 +3,11 @@ import path from 'path';
 import express from 'express';
 import compression from 'compression';
 
-import listenMiddleware from './middlewares/listen';
-import suggestionsMiddleware from './middlewares/getSuggestions';
-import executeCommandMiddleware from './middlewares/executeCommand';
+import mockData from 'server/utils/serialize.mock';
 
-import mockData from './serialize.mock';
+import listenMiddleware from 'server/middlewares/listen';
+import suggestionsMiddleware from 'server/middlewares/getSuggestions';
+import executeCommandMiddleware from 'server/middlewares/executeCommand';
 
 /**
  * Express App
