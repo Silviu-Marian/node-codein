@@ -16,25 +16,20 @@ let currentReducerId = 0; // allows removing reducers by id
 function getReducer(storePath) {
   return compose(
     mergePersistedState(),
-  )((state = {}, action) => {
-    if (typeof action.type !== 'string' || typeof reducers[storePath] !== 'object') {
-      return state;
-    }
-    let newState = state;
-
+  )((state = {}, action) =>
+    ((typeof action.type !== 'string' || typeof reducers[storePath] !== 'object') && state) ||
     [action.type, '*']
       .filter(actionType => typeof reducers[storePath][actionType] === 'object')
-      .forEach((actionType) => {
-        Object.values(reducers[storePath][actionType])
+      .reduce((prevState, actionType) => ({
+        ...prevState,
+        ...Object.values(reducers[storePath][actionType])
           .filter(reducer => typeof reducer === 'function')
-          .forEach((reducer) => {
-            newState = reducer(state, action);
-          });
-      });
-
-    // what's left after all those mutations
-    return newState;
-  });
+          .reduce((tempState, reducer) => ({
+            ...tempState,
+            ...reducer(state, action),
+          }), prevState),
+      }), state),
+  );
 }
 
 /**
@@ -47,7 +42,10 @@ export const store = createStore(getReducer(), compose(
       state => Object.keys(persistentStorePaths)
         .filter(storePath => persistentStorePaths[storePath])
         .reduce((prev, storePath) => ({ ...prev, [storePath]: state[storePath] }), {}),
-    ], []),
+    ], [
+      state => (Object.keys(state)
+        .forEach((storePath) => { persistentStorePaths[storePath] = true; }) || 1) && state,
+    ]),
   )(adapter(localStorage)), 'node-codein'),
 ));
 
