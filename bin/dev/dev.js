@@ -9,7 +9,6 @@ import webpack from 'webpack';
 
 import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 const ROOT = path.join(__dirname, '..', '..');
 const SRC = path.join(ROOT, 'src');
@@ -33,6 +32,10 @@ const commonConfig = {
     loaders: [
       { test: /\.(js|jsx)$/i, exclude: /node_modules/i, loader: `babel-loader?${babelConfig}` },
       { test: /\.json$/i, loader: 'json-loader' },
+      { test: /\.css$/i, loaders: ['style-loader', 'css-loader?importLoaders=1', 'postcss-loader'] },
+      { test: /\.scss$/i, loader: ['style-loader', 'css-loader?importLoaders=2', 'postcss-loader', 'sass-loader'] },
+      { test: /\.(jpeg|jpg|jpe|svg|gif|png)$/i, loader: 'url-loader?limit=102400' },
+      { test: /\.(woff|woff2|eot|ttf|svg|svgz)$/i, loader: 'url-loader?limit=102400' },
     ],
   },
   resolve: {
@@ -68,11 +71,6 @@ webpack({
       favicon: path.join(SRC, 'client', 'favicon.ico'),
       inject: false,
     }),
-
-    new CopyWebpackPlugin([{
-      from: path.join(SRC, 'client', '**'),
-      to: path.join(CLIENT),
-    }]),
   ],
 }).watch({ }, () => {
   //

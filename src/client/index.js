@@ -1,10 +1,26 @@
-import { addReducer, addStorePath, store } from 'client/Core/store';
+/* Styles */
+import 'client/fonts/stylesheet.css';
+import 'client/styles/style.scss';
+import 'client/styles/style.light.scss';
+import 'client/styles/style.dark.scss';
 
-store.subscribe(() => console.log(JSON.stringify(store.getState()))); // eslint-disable-line
+/* Scripts */
+import 'client/libraries/jq';
+import 'client/libraries/jquery-ui-1.8.21.custom.min';
 
-addStorePath('test', { x: 0, y: 0 }, true);
-addReducer('test', 'setX', (state, { x }) => ({ ...state, x }));
-addReducer('test', 'setY', (state, { y }) => ({ ...state, y }));
+import 'client/libraries/jq.cookie';
+import 'client/libraries/jq.hotkeys';
+import 'client/libraries/jq.tabby';
+import 'client/libraries/jq.unsel';
+import 'client/libraries/jq.storage';
+import 'client/libraries/dragscrollable';
 
-store.dispatch({ type: 'setX', x: 33 });
-store.dispatch({ type: 'setY', y: 55 });
+import 'client/scripts/localtree';
+import 'client/scripts/history';
+import 'client/scripts/sse';
+import 'client/scripts/suggest';
+import 'client/scripts/console';
+import 'client/scripts/tools';
+
+// @TODO react-helmet
+document.getElementsByTagName('title')[0].innerHTML = 'nodejs&trade; console';

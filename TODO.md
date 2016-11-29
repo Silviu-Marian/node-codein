@@ -1,5 +1,6 @@
 Client-side
 ===============
+- install helmet
 - implement state manager
 - remove fonticons (?)
 - add svg as background images (?)

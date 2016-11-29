@@ -5,10 +5,6 @@
   no-restricted-syntax: 0, prefer-arrow-callback:0, func-names: 0, object-shorthand: 0,
   camelcase: 0, no-shadow: 0 */
 
-window.is_numeric = function isNumeric(v) {
-  return (typeof v === 'number' || typeof v === 'string') && v !== '' && !isNaN(v);
-};
-
 $(document).ready(function () {
   var nsrMin = 40;
   var nsrMax = 500;

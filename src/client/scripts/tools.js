@@ -44,7 +44,7 @@ $(document).ready(function () {
     t_sw.removeClass('sel');
     var how = $.cookie(NS + 'theme');
     var cond = (how == null || how.toString() === 'light');
-    $('#dark_ui').prop('disabled', cond);
+    $('body')[(cond && 'removeClass') || 'addClass']('dark-ui');
 
     if (cond) { $('.t_light_ui').addClass('sel'); } else { $('.t_dark_ui').addClass('sel'); }
   };
