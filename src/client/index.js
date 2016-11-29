@@ -1,6 +1,6 @@
 import { addReducer, addStorePath, store } from 'client/Core/store';
 
-store.subscribe(() => console.log(JSON.stringify(store.getState())));
+store.subscribe(() => console.log(JSON.stringify(store.getState()))); // eslint-disable-line
 
 addStorePath('test', { x: 0, y: 0 }, true);
 addReducer('test', 'setX', (state, { x }) => ({ ...state, x }));

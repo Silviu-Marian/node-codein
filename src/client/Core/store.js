@@ -20,15 +20,13 @@ function getReducer(storePath) {
     ((typeof action.type !== 'string' || typeof reducers[storePath] !== 'object') && state) ||
     [action.type, '*']
       .filter(actionType => typeof reducers[storePath][actionType] === 'object')
-      .reduce((prevState, actionType) => ({
-        ...prevState,
-        ...Object.values(reducers[storePath][actionType])
-          .filter(reducer => typeof reducer === 'function')
-          .reduce((tempState, reducer) => ({
-            ...tempState,
-            ...reducer(state, action),
-          }), prevState),
-      }), state),
+      .reduce(
+        (prevState, actionType) =>
+          Object.values(reducers[storePath][actionType])
+            .filter(reducer => typeof reducer === 'function')
+            .reduce((tempState, reducer) => reducer(state, action), prevState),
+        state,
+      ),
   );
 }
 
