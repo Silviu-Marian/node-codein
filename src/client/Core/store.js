@@ -14,15 +14,17 @@ let currentReducerId = 0; // allows removing reducers by id
  * getReducer - retrieves a combined reducer for a given storePath
  */
 function getReducer(storePath) {
+  const storePathReducers = reducers[storePath];
   return compose(
     mergePersistedState(),
   )((state = {}, action) =>
-    ((typeof action.type !== 'string' || typeof reducers[storePath] !== 'object') && state) ||
+    ((typeof action.type !== 'string' || typeof storePathReducers !== 'object') && state) ||
     [action.type, '*']
-      .filter(actionType => typeof reducers[storePath][actionType] === 'object')
+      .filter(actionType => typeof storePathReducers[actionType] === 'object')
       .reduce(
         (prevState, actionType) =>
-          Object.values(reducers[storePath][actionType])
+          Object.keys(storePathReducers[actionType])
+            .map(key => storePathReducers[actionType][key])
             .filter(reducer => typeof reducer === 'function')
             .reduce((tempState, reducer) => reducer(state, action), prevState),
         state,
@@ -44,7 +46,8 @@ export const store = createStore(getReducer(), compose(
       state => (Object.keys(state)
         .forEach((storePath) => { persistentStorePaths[storePath] = true; }) || 1) && state,
     ]),
-  )(adapter(localStorage)), 'node-codein'),
+  )(adapter(((typeof localStorage === 'undefined' || !localStorage.getItem) &&
+    ({ getItem() {}, setItem() {}, deleteItem() {} })) || localStorage)), 'node-codein'),
 ));
 
 /**
