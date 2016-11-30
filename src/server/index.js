@@ -12,19 +12,17 @@ import executeCommandMiddleware from 'server/middlewares/executeCommand';
 /**
  * Express App
  */
-const app = express();
-app.use(compression());
+const serverPort = 55281;
+const serverHost = '127.0.0.1';
+
+const app = express()
+  .use(compression())
+  .use(express.static(path.join((typeof process.send === 'function' && process.cwd()) || __dirname, '.', 'client')));
 
 app.route('/listen').get(listenMiddleware);
 app.route('/getSuggestions').post(suggestionsMiddleware);
 app.route('/execute').post(executeCommandMiddleware);
-app.use(express.static(path.join((typeof process.send === 'function' && process.cwd()) || __dirname, '.', 'client')));
 
-/**
- * Server
- */
-const serverPort = 55281;
-const serverHost = '127.0.0.1';
 const sv = app
   .listen(serverPort, serverHost, () => {
     const { address, port } = sv.address();

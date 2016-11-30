@@ -1,11 +1,9 @@
 Client-side
 ===============
-- install helmet
 - implement state manager
 - remove fonticons (?)
 - add svg as background images (?)
 - separate interface modules
-- react?
 - material-ui?
 - handle \t characters in console (indentation)
 - profile
@@ -13,9 +11,8 @@ Client-side
 Finally
 =============
 - proper build system (webpack - publish dist/ only)
-- remove babel-register
-- remove all dependencies (only devDependencies should be left in)
 - create CONTRIBUTING guide
+- publishing section in contributing guide
 - update CHANGELOG (externalize from TODO)
 - update README
 

@@ -4,7 +4,7 @@ NodeJS Code Inspector
 
 Or simply *node-codein* is a very basic console for CommonJS environments.
 
-<img src="https://github.com/Silviu-Marian/node-codein/raw/master/src/client/images/screenshot.png" alt="NodeJS Console Object Debug Inspector" />
+<img src="https://github.com/Silviu-Marian/node-codein/raw/master/screenshot.png" alt="NodeJS Console Object Debug Inspector" />
 
 Disclaimer
 ---
@@ -77,7 +77,6 @@ Changelog
   - modified small real-estate features
   - added progressive rendering
   - exposed the whole module on *global.nodecodein*
-
 
 ____
 

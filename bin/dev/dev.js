@@ -3,9 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import cp from 'child_process';
 
+import express from 'express';
 import rimraf from 'rimraf';
 import mkpath from 'mkpath';
 import webpack from 'webpack';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
@@ -51,12 +53,17 @@ const commonConfig = {
 /**
  * Client
  */
-webpack({
+const hmrHost = '127.0.0.1';
+const hmrPort = 3001;
+const clientCompiler = webpack({
   ...commonConfig,
   target: 'web',
   context: path.join(SRC, 'client'),
   entry: {
-    client: path.join(SRC, 'client', 'index.js'),
+    client: [
+      `webpack-hot-middleware/client?path=http://${hmrHost}:${hmrPort}/__webpack_hmr`,
+      path.join(SRC, 'client', 'index.jsx'),
+    ],
   },
   output: {
     path: CLIENT,
@@ -71,10 +78,19 @@ webpack({
       favicon: path.join(SRC, 'client', 'favicon.ico'),
       inject: false,
     }),
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
   ],
-}).watch({ }, () => {
-  //
 });
+
+clientCompiler.watch({ }, () => {});
+
+// HMR
+express()
+  .use(webpackHotMiddleware(clientCompiler))
+  .listen(hmrPort, hmrHost, () => {})
+  .on('error', (e) => { throw e; });
 
 
 /**
