@@ -15,9 +15,9 @@ Finally
 - proper build system (webpack - publish dist/ only)
 - remove babel-register
 - remove all dependencies (only devDependencies should be left in)
-- update README
 - create CONTRIBUTING guide
 - update CHANGELOG (externalize from TODO)
+- update README
 
 Ideas
 =============
