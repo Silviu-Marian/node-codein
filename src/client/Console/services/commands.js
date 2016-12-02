@@ -1,4 +1,4 @@
-import { store, addReducer, addStorePath } from 'client/Core/store';
+import { addReducer, addStorePath } from 'client/Core/store';
 import { clear, pushInput, pushMessage, pushNotification } from './console';
 
 /**
@@ -42,27 +42,28 @@ addReducer(HISTORY_STORE_PATH, MARK_FIRST_VISIT_ACTION, state =>
  * execute - run a command locally or on the server
  */
 export const BUILTIN_COMMANDS = {
-  clear: () => clear(),
+  clear,
 };
 
-export function execute(body = '') {
+export const execute = (body = '') => (dispatch) => {
   // Is this command handled internally?
   const cleanCommand = body.replace(/[\s;]+$/, '').replace(/\r|\n|\t|\s/gmi, '');
   if (BUILTIN_COMMANDS[cleanCommand]) {
-    store.dispatch(pushInput(body));
-    return BUILTIN_COMMANDS[cleanCommand]();
+    dispatch(pushInput(body));
+    dispatch(BUILTIN_COMMANDS[cleanCommand]());
+    return;
   }
 
   // Handle command via server
   fetch('/execute', { method: 'post', body })
     .then(response => response.json())
     .then(({ result, error }) => {
-      store.dispatch((error && pushNotification(error)) || pushMessage(result));
+      dispatch((error && pushNotification(error)) || pushMessage(result));
     })
     .catch((error) => {
-      store.dispatch(pushNotification(`Failed: ${error}`));
+      dispatch(pushNotification(`Failed: ${error}`));
     });
 
   // Add command to console
-  return pushInput(body);
-}
+  dispatch(pushInput(body));
+};

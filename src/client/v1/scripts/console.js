@@ -1,10 +1,11 @@
-/* global $, SUGB */
+/* global $ */
 
 import { store } from 'client/Core/store';
 
 import { CONSOLE_STORE_PATH, clear, pushNotification } from 'client/Console/services/console';
 import { execute, addToHistory } from 'client/Console/services/commands';
 import { SETTINGS_STORE_PATH } from 'client/Console/services/settings';
+import { SUGGESTIONS_STORE_PATH } from 'client/Console/services/suggestions';
 import { renderAny } from './localTree';
 
 const escape = v => $('<span />').text(v).html();
@@ -72,11 +73,12 @@ $(document).ready(() => {
     .focus()
     .tabby()
     .on('keypress', (event) => {
+      const { suggestions } = store.getState()[SUGGESTIONS_STORE_PATH];
       if (
         (event.keyCode === 10 || event.keyCode === 13) && // enter was pressed
         !event.shiftKey && // shift was not held down
         !event.altKey && // alt key was not held down
-        (!SUGB || (SUGB && !SUGB.is(':visible'))) && // suggestions box was not visible to handle the event
+        (!suggestions || !suggestions.length) && // suggestions box was not visible
         c.val().trim() // command was not empty
       ) {
         event.preventDefault();

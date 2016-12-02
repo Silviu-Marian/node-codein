@@ -1,7 +1,8 @@
-/* global $, SUGB */
+/* global $ */
 
 import { store } from 'client/Core/store';
 import { HISTORY_STORE_PATH, addToHistory, markFirstVisit } from 'client/Console/services/commands';
+import { SUGGESTIONS_STORE_PATH } from 'client/Console/services/suggestions';
 
 let waitForDown = false;
 let waitForUp = false;
@@ -47,12 +48,9 @@ $(document).ready(() => {
   }
 
   c.on('keyup', (event) => {
-    try {
-      if (SUGB.is(':visible')) {
-        return;
-      }
-    } catch (e) {
-      //
+    const { suggestions } = store.getState()[SUGGESTIONS_STORE_PATH];
+    if (suggestions && suggestions.length) {
+      return;
     }
 
     // hide command hint

@@ -1,4 +1,4 @@
-/* global $, SUGB */
+/* global $ */
 import { store } from 'client/Core/store';
 import { LISTENER_STORE_PATH, subscribe } from 'client/Console/services/listen';
 

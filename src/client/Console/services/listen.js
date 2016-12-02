@@ -1,4 +1,4 @@
-import { store, addStorePath, addReducer } from 'client/Core/store';
+import { addStorePath, addReducer } from 'client/Core/store';
 import { pushMessage, pushNotification } from 'client/Console/services/console';
 /**
  * Store Path
@@ -23,37 +23,35 @@ addReducer(LISTENER_STORE_PATH, LISTENER_SET_CONNECTED_ACTION, (state, { mode })
  */
 let index = 0;
 let subscribed = false;
-export const subscribe = () => {
-  const noOp = { type: 'IGNORE' };
+export const subscribe = () => (dispatch) => {
   if (subscribed) {
-    return noOp;
+    return;
   }
   subscribed = true;
 
   const connect = () => {
-    store.dispatch(setConnected(true));
+    dispatch(setConnected(true));
     fetch(`/listen?${Date.now()}${index += 1}`, { method: 'get' })
       .then(response => response.json())
       .then(messages => messages.map(({ type, contents }) => {
         switch (type) {
           case 'warn':
           case 'error':
-            store.dispatch(pushNotification(typeof contents === 'object' ? contents.value : contents, type));
+            dispatch(pushNotification(typeof contents === 'object' ? contents.value : contents, type));
             break;
           case 'log':
           case 'info':
           default:
-            store.dispatch(pushMessage(contents));
+            dispatch(pushMessage(contents));
             break;
         }
         return contents;
       }))
       .then(() => setTimeout(() => connect(), 60))
       .catch(() => {
-        store.dispatch(setConnected(false));
+        dispatch(setConnected(false));
         setTimeout(() => connect(), 5000);
       });
   };
   connect();
-  return noOp;
 };

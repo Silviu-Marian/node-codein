@@ -1,50 +1,20 @@
 /* global $ */
-function getSubString(str = '', cursor) {
-  if (!str) {
-    return false;
-  }
 
-  // substring
-  const subString = (cursor === str.length && str) || str.substr(0, cursor);
-
-  // is inside a string or regex
-  const shouldContinue = [/"/g, /'/g, /\//g]
-    .map(regex => subString.match(regex))
-    .reduce((bottomLine, matches) =>
-      (bottomLine && (!matches || (matches && matches.length % 2 === 1))) || false, true);
-
-  if (!shouldContinue) {
-    return false;
-  }
-
-  // rightmost part
-  return subString.split(/[^A-Za-z0-9_$.]/gi).pop() || false;
-}
-
-// @TODO: Move to server
-function getRequestData(str = '') {
-  if (!str) {
-    return false;
-  }
-
-  const stringParts = str.split('.');
-  const lastBit = stringParts.pop();
-  return [stringParts.join('.'), lastBit];
-}
+import { store } from 'client/Core/store';
+import { getSuggestions, clearAll, SUGGESTIONS_STORE_PATH } from 'client/Console/services/suggestions';
 
 $(document).ready(() => {
   const c = $('#command');
   const sugpos = $('.sugpos');
-  const sugb = window.SUGB = $('<div id="autosug" class="suggestions"><ul></ul></div>').appendTo('#wrap').hide();
+  const suggestionsBox = $('<div id="autosug" class="suggestions"><ul></ul></div>').appendTo('#wrap').hide();
 
-  const hideSug = () => sugb.hide();
   function insertVal(v) {
     const nv = c.val();
     let cat = c.caretAt();
     c.val(nv.substr(0, cat) + v + nv.substr(cat));
     cat += v.length;
     c.selectRange(cat, cat);
-    return setTimeout(() => hideSug(), 60);
+    return setTimeout(() => store.dispatch(clearAll()), 60);
   }
 
   function showSug(data, part) {
@@ -53,9 +23,7 @@ $(document).ready(() => {
     }
 
     data.sort();
-
-    const ul = sugb.find('> ul');
-
+    const ul = suggestionsBox.find('> ul');
     ul.find('li').remove();
 
     for (let j = 0; j < data.length; j += 1) {
@@ -73,28 +41,39 @@ $(document).ready(() => {
 
     const pos = sugpos.find('.poslin').offset();
 
-    sugb.removeAttr('style');
-    sugb.css({ left: `${pos.left}px` });
-    if (sugb.outerHeight() > $('body').outerHeight() - pos.top) {
-      sugb.css({ bottom: '0px' });
+    suggestionsBox
+      .removeAttr('style')
+      .css({ left: `${pos.left}px` });
+    if (suggestionsBox.outerHeight() > $('body').outerHeight() - pos.top) {
+      suggestionsBox.css({ bottom: '0px' });
     } else {
-      sugb.css({ top: `${(pos.top - sugb.parent().offset().top)}px` });
+      suggestionsBox.css({ top: `${(pos.top - suggestionsBox.parent().offset().top)}px` });
     }
 
-    sugb.show();
+    suggestionsBox.show();
   }
 
-  let cto = 0;
-  let lastValid = 0;
-  let lastQ = '';
-
-  c.on('keydown', (event) => {
-    try {
-      if (!sugb.is(':visible')) {
-        return;
+  // React to suggestions list updates
+  let currentList = [];
+  let currentInput = '';
+  function handleChanges() {
+    const { suggestions, suggestionsStartWith } = store.getState()[SUGGESTIONS_STORE_PATH];
+    if (currentList !== suggestions || currentInput !== suggestionsStartWith) {
+      if (suggestions && suggestions.length) {
+        showSug(suggestions, suggestionsStartWith);
+      } else {
+        suggestionsBox.hide();
       }
-    } catch (e) {
-      //
+      currentList = suggestions;
+      currentInput = suggestionsStartWith;
+    }
+  }
+  store.subscribe(() => handleChanges());
+
+  // Handle keys
+  c.on('keydown', (event) => {
+    if (!suggestionsBox.is(':visible')) {
+      return;
     }
 
     if (
@@ -102,7 +81,7 @@ $(document).ready(() => {
       event.keyCode === 37 || /* left arrow */
       event.keyCode === 39 /* right arrow */
     ) {
-      hideSug();
+      store.dispatch(clearAll());
       return;
     }
 
@@ -114,11 +93,11 @@ $(document).ready(() => {
       return;
     }
 
-    const lis = sugb.find('li');
+    const lis = suggestionsBox.find('li');
     const curpos = lis.filter('.sel');
     if (ISENT) {
       if (!curpos.length) {
-        hideSug();
+        store.dispatch(clearAll());
         return;
       }
       curpos.trigger('click');
@@ -133,7 +112,7 @@ $(document).ready(() => {
         i += 1;
         curpos.removeClass('sel');
         const p = $(lis.get(i)).addClass('sel').position();
-        sugb.scrollTop(p.top);
+        suggestionsBox.scrollTop(p.top);
       }
     } else if (ISUP) {
       if (!curpos.length) {
@@ -146,7 +125,7 @@ $(document).ready(() => {
         i -= 1;
         curpos.removeClass('sel');
         const p = $(lis.get(i)).addClass('sel').position();
-        sugb.scrollTop(p.top);
+        suggestionsBox.scrollTop(p.top);
       }
     }
 
@@ -154,67 +133,22 @@ $(document).ready(() => {
     event.stopPropagation();
   });
 
+  let cto = 0;
+  let lastQ = '';
   c.on('keyup', () => {
     clearTimeout(cto);
     cto = setTimeout(() => {
-      const v = c.val();
-      if (v === lastQ) {
+      const command = c.val();
+      if (command === lastQ || !command) {
         return;
       }
 
-      hideSug();
-      if (v === '') {
-        lastQ = '';
-        return;
-      }
-
-      const part = getSubString(v, c.caretAt());
-      if (part === false) {
-        return;
-      }
-      const parts = getRequestData(part.trim());
-      if (parts === false) {
-        return;
-      }
-      const data = JSON.stringify(parts);
-
-      lastValid += 1;
-      const lastExp = lastValid;
-
-      hideSug();
-
-      $.ajax({
-        url: '/getSuggestions',
-        dataType: 'html',
-        data,
-        type: 'POST',
-        complete: (rs) => {
-          if (
-            lastExp !== lastValid ||
-            rs.status !== 200
-          ) {
-            return;
-          }
-
-          let r;
-          try {
-            r = JSON.parse(rs.responseText);
-          } catch (e) {
-            return;
-          }
-          try {
-            if (parts[1] === r[0]) {
-              return;
-            }
-          } catch (e) {
-            //
-          }
-          showSug(r, parts[1]);
-          lastQ = v;
-        },
-      });
+      const cursor = c.caretAt();
+      const input = (cursor === command.length && command) || command.substr(0, cursor);
+      lastQ = command;
+      store.dispatch(getSuggestions(input));
     }, 5);
   });
 
-  $('#output_wrappr').click(() => hideSug());
+  $('#output_wrappr').click(() => store.dispatch(clearAll()));
 });

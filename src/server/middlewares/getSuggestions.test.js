@@ -11,17 +11,19 @@ describe('getSuggestions middleware / autocomplete', () => {
 
   it('should return a list of suggestions for a global object', (done) => {
     const doTest = (data) => {
-      const r = JSON.parse(data);
-      expect(r[0]).to.equal('myobject1');
-      expect(r[1]).to.equal('myobject2');
-      expect(r.length).to.equal(2);
+      const { suggestions, suggestionsStartWith } = JSON.parse(data);
+
+      expect(suggestions[0]).to.equal('myobject1');
+      expect(suggestions[1]).to.equal('myobject2');
+      expect(suggestions.length).to.equal(2);
+      expect(suggestionsStartWith).to.equal('myobj');
       done();
     };
 
     global.myobject1 = {};
     global.myobject2 = {};
     getSuggestions(req, { end: doTest, send: doTest });
-    req.data(JSON.stringify(['', 'myobj']));
+    req.data('myobj');
     req.end();
   });
 });

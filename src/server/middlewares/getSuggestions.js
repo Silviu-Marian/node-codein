@@ -1,29 +1,58 @@
 export default function getSuggestions(req, res) {
-  let data = '';
-  req.on('data', (c) => { data += c; });
+  let input = '';
+  req.on('data', (c) => { input += c; });
   req.on('end', () => {
-    let r = '[]';
-    try {
-      const o = JSON.parse(data);
-      if (o && o.length) {
-        let target = global;
-        if (o[0]) {
-          try {
-            // @TODO: some validation,
-            // @TODO: paths should begin at global
-            target = eval(o[0]); // eslint-disable-line
-          } catch (e) {
-            target = {};
-          }
-        }
+    const noSuggestions = '[]';
 
-        // @TODO: serializer here?
-        const suggestions = Object.keys(target).filter(item => !o[1] || (o[1] && item.split(o[1])[0] === ''));
-        r = JSON.stringify(suggestions);
-      }
-    } catch (e) {
-      //
+    if (!input) {
+      res.send(noSuggestions);
+      return;
     }
-    res.send(r);
+
+    // Check to see if it's inside a string or regular expression
+    const shouldContinue = [/"/g, /'/g, /\//g]
+      .map(regex => input.match(regex))
+      .reduce((bottomLine, matches) =>
+        (bottomLine && (!matches || (matches && matches.length % 2 === 1))) || false, true);
+
+    if (!shouldContinue) {
+      res.send(noSuggestions);
+      return;
+    }
+
+    // get the rightmost part
+    const significantInput = input.split(/[^A-Za-z0-9_$.]/gi).pop();
+    if (!significantInput) {
+      res.send(noSuggestions);
+      return;
+    }
+
+    // we now know what we're working on, so let's see what we're working with
+    const stringParts = significantInput.split('.');
+    if (!stringParts.length) {
+      res.send(noSuggestions);
+      return;
+    }
+
+    const suggestionsStartWith = stringParts.pop();
+    const targetObjectAsString = (stringParts.length && stringParts.join('.')) || 'global';
+    let targetObject = global;
+    try {
+      targetObject = eval(targetObjectAsString); // eslint-disable-line
+    } catch (e) {
+      res.send(noSuggestions);
+      return;
+    }
+
+    const suggestions = Object.keys(targetObject)
+      .filter(item => !suggestionsStartWith || (suggestionsStartWith && item.split(suggestionsStartWith)[0] === ''))
+      .filter(item => item !== suggestionsStartWith);
+    res.send(JSON.stringify({
+      input,
+      significantInput,
+      suggestions,
+      suggestionsStartWith,
+      targetObjectAsString,
+    }));
   });
 }

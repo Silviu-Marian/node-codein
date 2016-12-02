@@ -1,7 +1,8 @@
 // Dynamic Reducers Loading - extended implementation of stackoverflow/32968016
 // @TODO: persistence layer - https://www.npmjs.com/package/redux-localstorage
 
-import { compose, createStore, combineReducers } from 'redux';
+import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import persistState, { transformState, mergePersistedState } from 'redux-localstorage';
 import adapter from 'redux-localstorage/lib/adapters/localStorage';
 
@@ -36,7 +37,7 @@ function getReducer(storePath) {
  * Store - the one and only
  */
 export const store = createStore(getReducer(), compose(
-  /* [middlewares] */
+  applyMiddleware(thunk),
   persistState(compose(
     transformState([
       state => Object.keys(persistentStorePaths)
