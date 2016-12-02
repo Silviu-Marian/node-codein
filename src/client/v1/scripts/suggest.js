@@ -1,78 +1,53 @@
-/* global $, trim */
-/* eslint prefer-arrow-callback: 0, func-names: 0, prefer-template: 0, object-shorthand: 0 */
-$(document).ready(function () {
+/* global $ */
+function getSubString(str = '', cursor) {
+  if (!str) {
+    return false;
+  }
+
+  // substring
+  const subString = (cursor === str.length && str) || str.substr(0, cursor);
+
+  // is inside a string or regex
+  const shouldContinue = [/"/g, /'/g, /\//g]
+    .map(regex => subString.match(regex))
+    .reduce((bottomLine, matches) =>
+      (bottomLine && (!matches || (matches && matches.length % 2 === 1))) || false, true);
+
+  if (!shouldContinue) {
+    return false;
+  }
+
+  // rightmost part
+  return subString.split(/[^A-Za-z0-9_$.]/gi).pop() || false;
+}
+
+// @TODO: Move to server
+function getRequestData(str = '') {
+  if (!str) {
+    return false;
+  }
+
+  const stringParts = str.split('.');
+  const lastBit = stringParts.pop();
+  return [stringParts.join('.'), lastBit];
+}
+
+$(document).ready(() => {
   const c = $('#command');
   const sugpos = $('.sugpos');
   const sugb = window.SUGB = $('<div id="autosug" class="suggestions"><ul></ul></div>').appendTo('#wrap').hide();
 
-  const getWorkingOn = function (str, pos) {
-    if (typeof str !== 'string') {
-      return false;
-    }
-
-    // get workable part
-    let ss = pos === str.length ? str : str.substr(0, pos);
-
-    // is inside a string or regex
-    let shouldContinue = true;
-    [ss.match(/"/g), ss.match(/'/g), ss.match(/\//g)].forEach(function (test) {
-      if (test === null || !test.length) {
-        return;
-      }
-      if (test.length % 2 === 1) {
-        shouldContinue = false;
-      }
-    });
-
-    if (!shouldContinue) {
-      return false;
-    }
-
-    // get separation dots (could use regex here)
-    let atp = 0;
-    for (let i = ss.length - 1; i >= 0; i -= 1) {
-      if ((/[^A-Za-z0-9_$.]/).test(ss[i])) {
-        atp = i + 1;
-        break;
-      }
-    }
-
-    ss = trim(ss.substr(atp, ss.length - atp));
-    if (ss === '') {
-      return false;
-    }
-    return ss;
-  };
-
-  const getSearchObject = function (str) {
-    if (
-      typeof str !== 'string' ||
-      !trim(str).length ||
-      str.charAt(0) === '.'
-    ) {
-      return false;
-    }
-
-    const ostr = str.split('.');
-    const r = [];
-    r[0] = '';
-    r[1] = ostr.pop();
-    r[0] = ostr.join('.');
-
-    return r;
-  };
-
-  const hideSug = function () { return sugb.hide(); };
-  const insertVal = window.commandInsertVal = function (v) {
+  const hideSug = () => sugb.hide();
+  function insertVal(v) {
     const nv = c.val();
     let cat = c.caretAt();
     c.val(nv.substr(0, cat) + v + nv.substr(cat));
     cat += v.length;
     c.selectRange(cat, cat);
-    return setTimeout(function () { hideSug(); }, 60);
-  };
+    return setTimeout(() => hideSug(), 60);
+  }
 
-  const showSug = function (data, part) {
+  function showSug(data, part) {
     if (typeof data !== 'object' || !data.length) {
       return;
     }
@@ -83,37 +58,37 @@ $(document).ready(function () {
 
     ul.find('li').remove();
 
-    for (let i = 0; i < data.length; i += 1) {
-      (function () {
+    for (let j = 0; j < data.length; j += 1) {
+      ((i) => {
         const el = $('<li />');
         el.text(data[i]); // if(i==0) el.addClass('sel');
         el.attr('ins', data[i].replace(part, ''));
-        el.click(function () { insertVal($(this).attr('ins')); });
+        el.click(function onElClick() { insertVal($(this).attr('ins')); });
         el.appendTo(ul);
-      }(i));
+      })(j);
     }
 
     sugpos.text(c.val().substr(0, c.caretAt()));
-    sugpos.html(sugpos.html() + '<div class="poslin">&nbsp;</div>');
+    sugpos.html(`${sugpos.html()}<div class="poslin">&nbsp;</div>`);
 
     const pos = sugpos.find('.poslin').offset();
 
     sugb.removeAttr('style');
-    sugb.css({ left: pos.left + 'px' });
+    sugb.css({ left: `${pos.left}px` });
     if (sugb.outerHeight() > $('body').outerHeight() - pos.top) {
       sugb.css({ bottom: '0px' });
     } else {
-      sugb.css({ top: (pos.top - sugb.parent().offset().top) + 'px' });
+      sugb.css({ top: `${(pos.top - sugb.parent().offset().top)}px` });
     }
 
     sugb.show();
-  };
+  }
 
   let cto = 0;
   let lastValid = 0;
   let lastQ = '';
 
-  c.on('keydown', function (event) {
+  c.on('keydown', (event) => {
     try {
       if (!sugb.is(':visible')) {
         return;
@@ -179,9 +154,9 @@ $(document).ready(function () {
     event.stopPropagation();
   });
 
-  c.on('keyup', function () {
+  c.on('keyup', () => {
     clearTimeout(cto);
-    cto = setTimeout(function () {
+    cto = setTimeout(() => {
       const v = c.val();
       if (v === lastQ) {
         return;
@@ -193,11 +168,11 @@ $(document).ready(function () {
         return;
       }
 
-      const part = getWorkingOn(v, c.caretAt());
+      const part = getSubString(v, c.caretAt());
       if (part === false) {
         return;
       }
-      const parts = getSearchObject(part);
+      const parts = getRequestData(part.trim());
       if (parts === false) {
         return;
       }
@@ -211,9 +186,9 @@ $(document).ready(function () {
       $.ajax({
         url: '/getSuggestions',
         dataType: 'html',
-        data: data,
+        data,
         type: 'POST',
-        complete: function (rs) {
+        complete: (rs) => {
           if (
             lastExp !== lastValid ||
             rs.status !== 200
@@ -241,7 +216,5 @@ $(document).ready(function () {
     }, 5);
   });
 
-  $('#output_wrappr').click(function () {
-    hideSug();
-  });
+  $('#output_wrappr').click(() => hideSug());
 });

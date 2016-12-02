@@ -63,6 +63,7 @@
     "nodemon": "1.11.0",
     "postcss-loader": "1.1.1",
     "progress-bar-webpack-plugin": "1.9.0",
+    "promise-polyfill": "6.0.2",
     "raw-loader": "0.5.1",
     "react": "15.4.1",
     "react-dom": "15.4.1",
@@ -77,6 +78,7 @@
     "stylelint-config-standard": "15.0.0",
     "url-loader": "0.5.7",
     "webpack": "2.1.0-beta.27",
-    "webpack-hot-middleware": "2.13.2"
+    "webpack-hot-middleware": "2.13.2",
+    "whatwg-fetch": "2.0.1"
   }
 }

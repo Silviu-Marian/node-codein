@@ -61,6 +61,8 @@ const clientCompiler = webpack({
   context: path.join(SRC, 'client'),
   entry: {
     client: [
+      'promise-polyfill',
+      'whatwg-fetch',
       `webpack-hot-middleware/client?path=http://${hmrHost}:${hmrPort}/__webpack_hmr`,
       path.join(SRC, 'client', 'index.jsx'),
     ],

@@ -1,66 +1,52 @@
-/* global trim, $, sthis, SUGB */
-/* eslint no-var: 0, vars-on-top: 0, func-names: 0, prefer-arrow-callback: 0 */
-window.sthis = {
-  waitForDown: false,
-  maxInputs: 50,
-  at: null,
-  busy: false,
-  key: 'sthis_prevInputs',
-  save(input) {
-    if (trim(input) === '') return;
+/* global $, SUGB */
 
-    var e = $.jStorage.get(sthis.key, '[]');
-    try { e = JSON.parse(e); } catch (x) { e = []; }
+import { store } from 'client/Core/store';
+import { HISTORY_STORE_PATH, addToHistory, markFirstVisit } from 'client/Console/services/commands';
 
-    if ([].concat(e).pop() === input) return;
+let waitForDown = false;
+let waitForUp = false;
+let cursor = null;
 
-    e.push(input);
+export function save(input) {
+  store.dispatch(addToHistory(input));
+  cursor = null;
+}
 
-    if (e.length > sthis.maxInputs) {
-      e = e.slice(e.length - sthis.maxInputs, e.length);
-    }
 
-    $.jStorage.set(sthis.key, JSON.stringify(e));
-    sthis.at = null;
-  },
-  getPrev() {
-    var e = $.jStorage.get(sthis.key, '[]');
-    try { e = JSON.parse(e); } catch (x) { e = []; }
-    if (!e.length) return '';
+export function getPrev() {
+  const e = store.getState()[HISTORY_STORE_PATH].commands;
+  let index = (cursor === null) ? e.length - 1 : cursor - 1;
+  index = (index < 0) ? 0 : index;
 
-    var index = (sthis.at === null) ? e.length - 1 : sthis.at - 1;
-    index = (index < 0) ? 0 : index;
+  const r = e[index];
+  cursor = index;
 
-    var r = e[index];
-    sthis.at = index;
+  return r || '';
+}
 
-    return r;
-  },
-  getNext() {
-    var e = $.jStorage.get(sthis.key, '[]');
-    try { e = JSON.parse(e); } catch (x) { e = []; }
-    if (!e.length) return '';
+export function getNext() {
+  const e = store.getState()[HISTORY_STORE_PATH].commands;
+  let index = (cursor === null) ? e.length - 1 : cursor + 1;
+  index = (index > e.length - 1) ? e.length - 1 : index;
 
-    var index = (sthis.at === null) ? e.length - 1 : sthis.at + 1;
-    index = (index > e.length - 1) ? e.length - 1 : index;
-    var r = e[index];
-    sthis.at = index + 1;
+  const r = e[index];
+  cursor = index + 1;
 
-    return r;
-  },
-};
+  return r || '';
+}
 
-$(document).ready(function () {
-  var c = $('#command');
-  var ch = $('#commandhint');
+$(document).ready(() => {
+  const c = $('#command');
+  const ch = $('#commandhint');
+  const isFirstVisit = store.getState()[HISTORY_STORE_PATH].isFirstVisit;
 
-  if (typeof ($.cookie('nohint')) === 'string') {
+  // Handle first-time users
+  store.dispatch(markFirstVisit());
+  if (!isFirstVisit) {
     ch.text('');
   }
 
-  $.cookie('nohint', 'nohint', { expires: 30 });
-
-  c.on('keyup', function (event) {
+  c.on('keyup', (event) => {
     try {
       if (SUGB.is(':visible')) {
         return;
@@ -68,45 +54,43 @@ $(document).ready(function () {
     } catch (e) {
       //
     }
-    if (c.val() === '') ch.show(); else ch.hide();
 
-    if (sthis.busy) return;
+    // hide command hint
+    ch[(c.val() === '' && 'show') || 'hide']();
+
     if (event.keyCode !== 38 && event.keyCode !== 40) {
-      sthis.waitForUp = false;
-      sthis.waitForDown = false;
+      waitForUp = false;
+      waitForDown = false;
       return;
     }
 
-    var ISUP = (event.keyCode === 38);
-    var ISDW = (event.keyCode === 40);
-    var len = c.val().length;
-    var at = c.caretAt();
-    var hassmth = len || trim(c.val()).length;
+    const ISUP = (event.keyCode === 38);
+    const ISDW = (event.keyCode === 40);
+    const len = c.val().length;
+    const at = c.caretAt();
+    const hassmth = len || c.val().trim().length;
 
     if ((ISUP && at !== 0) || (ISDW && at !== len)) {
-      sthis.waitForUp = false;
-      sthis.waitForDown = false;
+      waitForUp = false;
+      waitForDown = false;
       return;
     }
-    if (hassmth && ISDW && !sthis.waitForDown) { sthis.waitForDown = true; return; }
-    if (hassmth && ISUP && !sthis.waitForUp) { sthis.waitForUp = true; return; }
-
-    sthis.busy = true;
+    if (hassmth && ISDW && !waitForDown) { waitForDown = true; return; }
+    if (hassmth && ISUP && !waitForUp) { waitForUp = true; return; }
 
     if (ISUP) {
-      c.val(sthis.getPrev());
+      c.val(getPrev());
       c.selectRange(0, 0);
-      sthis.waitForUp = true;
-      sthis.waitForDown = false;
+      waitForUp = true;
+      waitForDown = false;
     } else {
-      var gn = sthis.getNext();
+      const gn = getNext();
       c.val(gn);
       c.selectRange(gn.length, gn.length);
-      sthis.waitForDown = true;
-      sthis.waitForUp = false;
+      waitForDown = true;
+      waitForUp = false;
     }
 
     ch.hide();
-    sthis.busy = false;
   });
 });

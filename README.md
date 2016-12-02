@@ -61,22 +61,30 @@ Limitations
 
 Changelog
 ---
+- 1.0.6, 1.0.7
+  - Repository upgrades
+  - Preparations for v2
+
+- 1.0.5
+  - Added `CTRL+L` (clear)
+  - Minor improvements and bugfixes
+
 -	1.0.4
   - Added listeners to unbind the server on app crash (unhandledException, SIGTERM, SIGKILL)
 
 - 1.0.3
-  - fixed incompatibility issues with expressjs and locomotive; special thanks to <a href="http://frantzmiccoli.com/" target="_blank">Fräntz Miccoli</a>
+  - Fixed incompatibility issues with express and locomotive; thanks to [Fräntz Miccoli](http://frantzmiccoli.com/)
 
 - 1.0.2
-  - fixed a bug on prefixed function content strings (thanks Evangenieur)
-  - replaced iScroller with dragScrollable (less fancier but works on latest Chrome)
+  - Fixed a bug on prefixed function content strings (thanks Evangenieur)
+  - Replaced iScroller with dragScrollable (less fancier but works on latest Chrome)
 
 - 1.0.1
-  - removed the buggy, CPU-intensive jsTree
-  - updated UI colors
-  - modified small real-estate features
-  - added progressive rendering
-  - exposed the whole module on *global.nodecodein*
+  - Removed the buggy, CPU-intensive jsTree
+  - Updated UI colors
+  - Modified small real-estate features
+  - Added progressive rendering
+  - Exposed the whole module on *global.nodecodein*
 
 ____
 

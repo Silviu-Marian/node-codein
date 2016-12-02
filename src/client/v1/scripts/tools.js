@@ -1,105 +1,252 @@
-/* global $, doResizeWin, NS, clearConsole, focusLastMessage */
-/* eslint no-var: 0, prefer-template: 0, vars-on-top: 0, no-loop-func: 0, no-param-reassign: 0,
-  no-restricted-syntax: 0, prefer-arrow-callback:0, no-use-before-define: 0, camelcase: 0,
-  func-names: 0 */
+/* global $ */
+import { store } from 'client/Core/store';
+import { clear } from 'client/Console/services/console';
+import { SETTINGS_STORE_PATH, saveSettings } from 'client/Console/services/settings';
 
-$(document).ready(function () {
-  var swa = $('.show-write-area');
-  var autoexp = $('.autoexpand');
-  var dotstruct = $('.dotstruct');
-  var preserve = $('.preserve');
-  var t_sw = $('.t_dark_ui, .t_light_ui');
+function getSettings() {
+  return store.getState()[SETTINGS_STORE_PATH];
+}
 
-  var vw = $('#output_viewer');
+const minHeight = 40;
+const maxHeight = 500;
+function adjustLayout() {
+  const { inputAreaHeight } = getSettings();
+  if (
+    isNaN(inputAreaHeight * 1) ||
+    inputAreaHeight < minHeight ||
+    inputAreaHeight > maxHeight
+  ) {
+    return;
+  }
 
-  var actShowHideWriteArea = function () {
-    var how = $.cookie(NS + 'writearea');
+  const formWrap = $('#formwrap');
+  const outputWrapper = $('#output_wrappr');
+  const wrap = $('#wrap');
 
-    if (how == null || how.toString() !== 'hidden') {
-      swa.addClass('sel');
-      $('#formwrap').show().removeClass('h'); doResizeWin();
-      $('#command').focus();
-    } else {
-      swa.removeClass('sel');
-      $('#formwrap').hide('fast', function () { $(this).addClass('h'); doResizeWin(); });
+  const newHeight = (formWrap.is(':visible') && inputAreaHeight) || 0;
+
+  formWrap.height(newHeight);
+  outputWrapper.height(wrap.height() - newHeight);
+}
+
+
+/**
+ * Useless buttons (duplicate, clear, reload)
+ */
+$(() => {
+  $('.new-window').click(() => window.open(window.location.href));
+  $('.clear-console').click(() => { store.dispatch(clear()); });
+  $('.reload').click(() => window.location.reload());
+});
+
+/**
+ * Hide/Show write area
+ */
+$(() => {
+  let currentState;
+  const swa = $('.show-write-area');
+  function handleChange() {
+    const { showInputArea } = getSettings();
+    if (currentState !== showInputArea) {
+      if (showInputArea) {
+        swa.addClass('sel');
+        $('#formwrap').show().removeClass('h');
+        adjustLayout();
+        $('#command').focus();
+      } else {
+        swa.removeClass('sel');
+        $('#formwrap').hide('fast', function hide() { $(this).addClass('h'); adjustLayout(); });
+      }
+      currentState = showInputArea;
     }
-  };
+  }
+  swa.click(() => store.dispatch(saveSettings({ showInputArea: !currentState })));
+  store.subscribe(() => handleChange());
+  handleChange();
+});
 
-  var actAutoExpand = function () {
-    var how = $.cookie(NS + 'autoexpand');
-    if (how == null || how.toString() !== 'yes') { autoexp.removeClass('sel'); } else { autoexp.addClass('sel'); }
-  };
+/**
+ * Autoexpand
+ */
+$(() => {
+  let currentState;
+  const autoexp = $('.autoexpand');
+  function actAutoExpand() {
+    const { autoExpand } = getSettings();
+    if (currentState !== autoExpand) {
+      if (autoExpand) {
+        autoexp.addClass('sel');
+      } else {
+        autoexp.removeClass('sel');
+      }
+      currentState = autoExpand;
+    }
+  }
+  autoexp.click(() => store.dispatch(saveSettings({ autoExpand: !currentState })));
+  store.subscribe(() => actAutoExpand());
+  actAutoExpand();
+});
 
-  var actDotStruct = function () {
-    var how = $.cookie(NS + 'dotstruct');
-    if (how == null || how.toString() !== 'no') { dotstruct.addClass('sel'); $('body').removeClass('nodots'); } else { dotstruct.removeClass('sel'); $('body').addClass('nodots'); }
-  };
+/**
+ * Highlight and show spine
+ */
+$(() => {
+  let currentState;
+  const dotstruct = $('.dotstruct');
+  function actDotStruct() {
+    const { highlight, showSpine } = getSettings();
+    if (highlight !== currentState || showSpine !== currentState) {
+      if (highlight || showSpine) {
+        dotstruct.addClass('sel');
+        $('body').removeClass('nodots');
+      } else {
+        dotstruct.removeClass('sel');
+        $('body').addClass('nodots');
+      }
+      currentState = (highlight || showSpine);
+    }
+  }
+  dotstruct.click(() =>
+    store.dispatch(saveSettings({ highlight: !currentState, showSpine: !currentState })));
+  store.subscribe(() => actDotStruct());
+  actDotStruct();
+});
 
-  var actPreserve = function () {
-    var how = $.cookie(NS + 'preserve');
-    if (how == null || how.toString() !== 'yes') { preserve.removeClass('sel').text('w'); } else { preserve.addClass('sel').text('x'); }
-  };
+/**
+ * Preserve input
+ */
+$(() => {
+  let currentState;
+  const preserve = $('.preserve');
+  function actPreserve() {
+    const { preserveInput } = getSettings();
+    if (preserveInput !== currentState) {
+      if (preserveInput) {
+        preserve.addClass('sel').text('x');
+      } else {
+        preserve.removeClass('sel').text('w');
+      }
+      currentState = preserveInput;
+    }
+  }
+  preserve.click(() => store.dispatch(saveSettings({ preserveInput: !currentState })));
+  store.subscribe(() => actPreserve());
+  actPreserve();
+});
 
-  var actTheme = function () {
-    t_sw.removeClass('sel');
-    var how = $.cookie(NS + 'theme');
-    var cond = (how == null || how.toString() === 'light');
-    $('body')[(cond && 'removeClass') || 'addClass']('dark-ui');
+/**
+ * Themes changer
+ */
+$(() => {
+  let currentTheme;
+  const themeSwitchers = $('.t_dark_ui, .t_light_ui');
+  function actTheme() {
+    const { themeClass } = getSettings();
+    if (themeClass !== currentTheme) {
+      themeSwitchers.removeClass('sel');
+      $('body')
+        .removeClass(currentTheme)
+        .addClass(themeClass);
+      $(this).addClass('sel');
 
-    if (cond) { $('.t_light_ui').addClass('sel'); } else { $('.t_dark_ui').addClass('sel'); }
-  };
+      $(themeClass === 'dark-ui' ? '.t_dark_ui' : '.t_light_ui').addClass('sel');
+      currentTheme = themeClass;
+    }
+  }
 
-  $('.new-window').click(function () {
-    var newwin = window.open(window.location.href, 'w' + (new Date().getTime()),
-    'height=500,width=800,modal=yes,alwaysRaised=yes');
+  themeSwitchers.click(() =>
+    store.dispatch(saveSettings({ themeClass: (currentTheme !== 'dark-ui' && 'dark-ui') || '' })));
 
-    newwin.addEventListener('load', function () {
-      var dbl = $('#output_viewer > *').clone(true, true);
-      var tgt = $(newwin.document.getElementById('output_viewer'));
-      window.lastnewwindow = newwin;
-      dbl.appendTo(tgt);
-    }, false);
-  });
+  store.subscribe(() => actTheme());
+  actTheme();
+});
 
-  $('.clear-console').click(function () { clearConsole(); focusLastMessage(); });
-  $('.ui-resizable-n').on('dblclick', function () { swa.click(); });
-  $('.reload').click(function () { return window.location.reload(); });
 
-  swa.click(function () {
-    $.cookie(NS + 'writearea', $(this).is('.sel') ? 'hidden' : 'visible', { expires: 30 });
-    actShowHideWriteArea();
-  }); actShowHideWriteArea();
+/**
+ * Scroll/pan
+ */
+$(() => {
+  let currentMode;
+  const iscr = $('.iScroll');
+  function actiscr() {
+    const { showScrollbars } = getSettings();
+    if (currentMode !== showScrollbars) {
+      if (showScrollbars) {
+        $('#output_wrappr').removeClass('dragscrollable');
+        iscr.removeClass('sel').text('Scrolling');
+        $('#output_wrappr').css({ overflow: 'auto' });
+        $('#output_wrappr').unbind();
+        $('#output_viewer').unbind();
+      } else {
+        $('#output_wrappr').addClass('dragscrollable');
+        iscr.addClass('sel').text('Panning');
+        $('#output_wrappr').css({ overflow: 'hidden' });
+        $('#output_wrappr').dragscrollable({ dragSelector: '#output_viewer', acceptPropagatedEvent: true });
+      }
+      currentMode = showScrollbars;
+    }
+  }
+  iscr.click(() => store.dispatch(saveSettings({ showScrollbars: !currentMode })));
+  store.subscribe(() => actiscr());
+  actiscr();
+});
 
-  autoexp.click(function () {
-    $.cookie(NS + 'autoexpand', $(this).is('.sel') ? 'no' : 'yes', { expires: 30 });
-    actAutoExpand();
-  }); actAutoExpand();
 
-  dotstruct.click(function () {
-    $.cookie(NS + 'dotstruct', $(this).is('.sel') ? 'no' : 'yes', { expires: 30 });
-    actDotStruct();
-  }); actDotStruct();
+/**
+ * Expand/collapse all objects
+ */
+$(() => {
+  const vw = $('#output_viewer');
+  const vwr = $('#output_wrappr');
 
-  preserve.click(function () {
-    $.cookie(NS + 'preserve', $(this).is('.sel') ? 'no' : 'yes', { expires: 30 });
-    actPreserve();
-  }); actPreserve();
-
-  $('.expand-all').click(function () {
-    var acoll = vw.find('.arrow-collapsed');
+  $('.expand-all').click(() => {
+    let acoll = vw.find('.arrow-collapsed');
     while (acoll.length) {
       acoll.click();
       acoll = vw.find('.arrow-collapsed');
     }
   });
-  $('.collapse-all').click(function () {
+
+/**
+ * Collapse everything
+ */
+  $('.collapse-all').click(() => {
     vw.find('.arrow-expanded').click();
     vw.find('.expandable > .object').remove();
-    focusLastMessage();
+    vwr.scrollLeft(0).scrollTop(vw.height());
+  });
+});
+
+
+/**
+ * Resizable input area
+ */
+$(() => {
+  // RESIZING CONTAINER AREA
+  // @TODO: move to tools.js
+  $('#formwrap')
+  .resizable({
+    handles: 'n',
+    minHeight,
+    maxHeight,
+  })
+  .on('resize', (event, { size: { height } }) => {
+    $('#output_wrappr').height($('#wrap').height() - height);
+    $('#formwrap').height(height);
+    event.stopPropagation();
+    //
+  })
+  .on('resizestop', (event, { size: { height } }) => {
+    store.dispatch(saveSettings({ inputAreaHeight: height }));
   });
 
-  t_sw.click(function () {
-    $.cookie(NS + 'theme', $(this).is('.t_dark_ui') ? 'dark' : 'light', { expires: 30 });
-    actTheme();
-  }); actTheme();
+  store.subscribe(() => adjustLayout());
+  $(window).on('resize', () => adjustLayout());
+  adjustLayout();
 });
+
+
+/**
+ * Everything should be unselectable
+ */
+$(() => $('.tool').unsel(true));

@@ -16,7 +16,6 @@ import 'client/v1/libraries/jq.unsel';
 import 'client/v1/libraries/jq.storage';
 import 'client/v1/libraries/dragscrollable';
 
-import 'client/v1/scripts/localtree';
 import 'client/v1/scripts/history';
 import 'client/v1/scripts/sse';
 import 'client/v1/scripts/suggest';
