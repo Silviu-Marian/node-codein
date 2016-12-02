@@ -18,54 +18,57 @@ $(document).ready(() => {
   /**
    * React to console commands
    */
-  let commandsCount = 0;
+  let currentCommands;
+  let renderedUpTo = 0;
   store.subscribe(() => {
     const { commands } = store.getState()[CONSOLE_STORE_PATH];
-    if ((!commands || !commands.length) && commandsCount !== 0) {
-      const { preserveInput } = store.getState()[SETTINGS_STORE_PATH];
-      if (!preserveInput) {
-        c.val('');
+    if (commands !== currentCommands) {
+      if (!commands || !commands.length) {
+        const { preserveInput } = store.getState()[SETTINGS_STORE_PATH];
+        if (!preserveInput) {
+          c.val('');
+        }
+        vw.html('');
+      } else {
+        // Add any new messages
+        commands
+          .slice(renderedUpTo)
+          .forEach(({ type, message, messageType }) => {
+            switch (type) {
+              case 'notification': {
+                const messageClass = (typeof messageType === 'string' && messageType) || 'error';
+                $('<div class="output" />')
+                  .addClass(messageClass)
+                  .append('<span class="eicon">W </span>')
+                  .append(escape(message))
+                  .appendTo(vw);
+                break;
+              }
+              case 'message': {
+                const { autoExpand } = store.getState()[SETTINGS_STORE_PATH];
+                $('<div class="output" />')
+                  .append(renderAny(message, autoExpand))
+                  .appendTo(vw);
+                break;
+              }
+              case 'input': {
+                $('<div class="cli" />')
+                  .append(escape(message))
+                  .appendTo(vw);
+                break;
+              }
+              default:
+                break;
+            }
+          });
       }
-      vw.html('');
-    } else {
-      // Add any new messages
-      commands
-        .slice(commandsCount)
-        .forEach(({ type, message, messageType }) => {
-          switch (type) {
-            case 'notification': {
-              const messageClass = (typeof messageType === 'string' && messageType) || 'error';
-              $('<div class="output" />')
-                .addClass(messageClass)
-                .append('<span class="eicon">W </span>')
-                .append(escape(message))
-                .appendTo(vw);
-              break;
-            }
-            case 'message': {
-              const { autoExpand } = store.getState()[SETTINGS_STORE_PATH];
-              $('<div class="output" />')
-                .append(renderAny(message, autoExpand))
-                .appendTo(vw);
-              break;
-            }
-            case 'input': {
-              $('<div class="cli" />')
-                .append(escape(message))
-                .appendTo(vw);
-              break;
-            }
-            default:
-              break;
-          }
-        });
+      // Scroll to bottom
+      vwr.scrollLeft(0).scrollTop(vw.height());
+
+      // Internal State
+      currentCommands = commands;
+      renderedUpTo = (commands && commands.length) || 0;
     }
-
-    // Scroll to bottom
-    vwr.scrollLeft(0).scrollTop(vw.height());
-
-    // Internal State
-    commandsCount = (commands && commands.length) || 0;
   });
 
   // SEND ENTER KEY EVENTS

@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
+import Helmet from 'react-helmet';
 
-export default class Console extends Component {
-  componentWillMount() {
-    //
-  }
+import style from './index.scss';
+
+export default class MainApp extends Component {
+  componentWillUnmount() { }
 
   render() {
-    return <div />;
+    return (
+      <div className={style.console}>
+        <Helmet title="nodejs™ console" />
+      </div>
+    );
   }
 }

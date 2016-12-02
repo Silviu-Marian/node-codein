@@ -1,9 +1,7 @@
 Client-side
 ===============
-- get rid of globals
-- implement state manager
-- remove COOKIES_PREFIX
 - separate interface modules
+- add React
 - handle \t characters in console (indentation)
 - profile
 

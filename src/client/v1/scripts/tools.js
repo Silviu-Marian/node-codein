@@ -172,16 +172,23 @@ $(() => {
     const { showScrollbars } = getSettings();
     if (currentMode !== showScrollbars) {
       if (showScrollbars) {
-        $('#output_wrappr').removeClass('dragscrollable');
-        iscr.removeClass('sel').text('Scrolling');
-        $('#output_wrappr').css({ overflow: 'auto' });
-        $('#output_wrappr').unbind();
-        $('#output_viewer').unbind();
+        $('#output_wrappr')
+          .removeClass('dragscrollable')
+          .css({ overflow: 'auto' })
+          .off();
+        $('#output_viewer')
+          .off();
+        iscr
+          .removeClass('sel')
+          .text('Scrolling');
       } else {
-        $('#output_wrappr').addClass('dragscrollable');
-        iscr.addClass('sel').text('Panning');
-        $('#output_wrappr').css({ overflow: 'hidden' });
-        $('#output_wrappr').dragscrollable({ dragSelector: '#output_viewer', acceptPropagatedEvent: true });
+        $('#output_wrappr')
+          .addClass('dragscrollable')
+          .css({ overflow: 'hidden' })
+          .dragscrollable();
+        iscr
+          .addClass('sel')
+          .text('Panning');
       }
       currentMode = showScrollbars;
     }

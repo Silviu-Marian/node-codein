@@ -5,138 +5,139 @@ $base1:     #93a1a1;
 $base2:     #dddddd; #dddddd
 $base3:     #ffffff; #ffffff
 
- */
+*/
 
 /* UI */
+:global {
+  body,
+  html,
+  #wrap,
+  textarea,
+  input {
+    background: #fff;
+    color: #000;
+  }
 
-body,
-html,
-#wrap,
-textarea,
-input {
-  background: #fff;
-  color: #000;
-}
+  .tool,
+  .ui-resizable-n {
+    background: linear-gradient(180deg, #fff 0%, #ddd 100%);
+    border-top: solid 1px #fff;
+    border-bottom: solid 1px #93a1a1;
+  }
 
-.tool,
-.ui-resizable-n {
-  background: linear-gradient(180deg, #fff 0%, #ddd 100%);
-  border-top: solid 1px #fff;
-  border-bottom: solid 1px #93a1a1;
-}
+  .ui-resizable-n {
+    border-top: solid 1px #93a1a1;
+  }
 
-.ui-resizable-n {
-  border-top: solid 1px #93a1a1;
-}
+  .tool-bottom {
+    border-top: solid 1px #93a1a1;
+    border-bottom: solid 1px #93a1a1;
+  }
 
-.tool-bottom {
-  border-top: solid 1px #93a1a1;
-  border-bottom: solid 1px #93a1a1;
-}
+  .cli {
+    border-top: solid 1px #ddd;
+  }
 
-.cli {
-  border-top: solid 1px #ddd;
-}
+  /* commands and data types */
 
-/* commands and data types */
+  .object .header:hover {
+    background: #ddd;
+  }
 
-.object .header:hover {
-  background: #ddd;
-}
+  .nodots .object {
+    border-color: transparent;
+  }
 
-.nodots .object {
-  border-color: transparent;
-}
+  .nodots .object .header:hover {
+    background: none;
+  }
 
-.nodots .object .header:hover {
-  background: none;
-}
+  /* toolbar buttons */
 
-/* toolbar buttons */
+  .tool b {
+    text-shadow: 0 1px 0 #fff;
+    border-right: solid 1px #93a1a1;
+    -webkit-box-shadow: 1px 0 0 #fff;
+    -moz-box-shadow: 1px 0 0 #fff;
+    box-shadow: 1px 0 0 #fff;
+  }
 
-.tool b {
-  text-shadow: 0 1px 0 #fff;
-  border-right: solid 1px #93a1a1;
-  -webkit-box-shadow: 1px 0 0 #fff;
-  -moz-box-shadow: 1px 0 0 #fff;
-  box-shadow: 1px 0 0 #fff;
-}
+  .tool b:active,
+  .tool b:focus {
+    background: #93a1a1;
+  }
 
-.tool b:active,
-.tool b:focus {
-  background: #93a1a1;
-}
+  .tool b.r {
+    border-left: solid 1px #93a1a1;
+    -webkit-box-shadow: -1px 0 0 #fff;
+    -moz-box-shadow: -1px 0 0 #fff;
+    box-shadow: -1px 0 0 #fff;
+    border-right: none;
+  }
 
-.tool b.r {
-  border-left: solid 1px #93a1a1;
-  -webkit-box-shadow: -1px 0 0 #fff;
-  -moz-box-shadow: -1px 0 0 #fff;
-  box-shadow: -1px 0 0 #fff;
-  border-right: none;
-}
+  .tool b.sel {
+    color: #268bd2;
+  }
 
-.tool b.sel {
-  color: #268bd2;
-}
+  .tool b,
+  .tool b > a {
+    color: #839496;
+  }
 
-.tool b,
-.tool b > a {
-  color: #839496;
-}
+  /* toolbar text controls */
+  .tool > a {
+    color: #839496;
+    text-shadow: 0 1px 0 #fff;
+    border-bottom: solid 1px transparent;
+  }
 
-/* toolbar text controls */
-.tool > a {
-  color: #839496;
-  text-shadow: 0 1px 0 #fff;
-  border-bottom: solid 1px transparent;
-}
+  .tool > a:hover,
+  .tool > a.sel,
+  .tool > a:active,
+  .tool > a:focus {
+    color: #fff;
+    text-shadow: 0 1px 0 #93a1a1;
+    background: #839496;
+    border-bottom-color: #fff;
+  }
 
-.tool > a:hover,
-.tool > a.sel,
-.tool > a:active,
-.tool > a:focus {
-  color: #fff;
-  text-shadow: 0 1px 0 #93a1a1;
-  background: #839496;
-  border-bottom-color: #fff;
-}
+  .tool > a:hover {
+    background: #93a1a1;
+  }
 
-.tool > a:hover {
-  background: #93a1a1;
-}
+  .tool > a:active,
+  .tool > a:focus {
+    background: #93a1a1;
+  }
 
-.tool > a:active,
-.tool > a:focus {
-  background: #93a1a1;
-}
+  .tool > a.nosel,
+  .tool > a.nosel:hover,
+  .tool > a.nosel:active,
+  .tool > a.nosel:focus {
+    background: none !important;
+    border-color: transparent !important;
+    color: #93a1a1;
+    text-shadow: none;
+  }
 
-.tool > a.nosel,
-.tool > a.nosel:hover,
-.tool > a.nosel:active,
-.tool > a.nosel:focus {
-  background: none !important;
-  border-color: transparent !important;
-  color: #93a1a1;
-  text-shadow: none;
-}
+  /* suggestions */
+  .suggestions {
+    background: #fff;
+    border: solid 1px #93a1a1;
+  }
 
-/* suggestions */
-.suggestions {
-  background: #fff;
-  border: solid 1px #93a1a1;
-}
+  .suggestions li.sel,
+  .suggestions li:hover {
+    background: #ddd;
+    border-color: dddddd;
+  }
 
-.suggestions li.sel,
-.suggestions li:hover {
-  background: #ddd;
-  border-color: dddddd;
-}
+  /* those are invisible */
+  .poslin {
+    background: #c00;
+  }
 
-/* those are invisible */
-.poslin {
-  background: #c00;
-}
-
-#sugpos {
-  background: #cfc;
+  #sugpos {
+    background: #cfc;
+  }
 }

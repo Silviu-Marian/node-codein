@@ -8,136 +8,137 @@ $base03:    #252525; // #111333
 */
 
 /* UI */
+:global {
+  .dark-ui {
+    &,
+    #wrap,
+    textarea,
+    input {
+      background: #252525;
+      color: #fff;
+    }
 
-.dark-ui {
-  &,
-  #wrap,
-  textarea,
-  input {
-    background: #252525;
-    color: #fff;
-  }
+    .tool,
+    .ui-resizable-n {
+      background: linear-gradient(180deg, #4a4a4a 0%, #252525 100%);
+      border-top: solid 1px #252525;
+      border-bottom: solid 1px #666;
+    }
 
-  .tool,
-  .ui-resizable-n {
-    background: linear-gradient(180deg, #4a4a4a 0%, #252525 100%);
-    border-top: solid 1px #252525;
-    border-bottom: solid 1px #666;
-  }
+    .ui-resizable-n {
+      border-top: solid 1px #666;
+    }
 
-  .ui-resizable-n {
-    border-top: solid 1px #666;
-  }
+    .tool-bottom {
+      border-top: solid 1px #666;
+      border-bottom: solid 1px #666;
+    }
 
-  .tool-bottom {
-    border-top: solid 1px #666;
-    border-bottom: solid 1px #666;
-  }
+    .cli {
+      border-top: solid 1px #4a4a4a;
+    }
 
-  .cli {
-    border-top: solid 1px #4a4a4a;
-  }
+    /* commands and data types */
+    .object .header:hover {
+      background: #4a4a4a;
+    }
 
-  /* commands and data types */
-  .object .header:hover {
-    background: #4a4a4a;
-  }
+    .nodots .object {
+      border-color: transparent;
+    }
 
-  .nodots .object {
-    border-color: transparent;
-  }
+    .nodots .object .header:hover {
+      background: none;
+    }
 
-  .nodots .object .header:hover {
-    background: none;
-  }
+    /* toolbar buttons */
 
-  /* toolbar buttons */
+    .tool b {
+      text-shadow: none;
+      text-shadow: 0 -1px 0 #252525 !important;
+      border-right: solid 1px #666;
+      box-shadow: 1px 0 0 #252525;
+    }
 
-  .tool b {
-    text-shadow: none;
-    text-shadow: 0 -1px 0 #252525 !important;
-    border-right: solid 1px #666;
-    box-shadow: 1px 0 0 #252525;
-  }
+    .tool b:active,
+    .tool b:focus {
+      background: #666;
+    }
 
-  .tool b:active,
-  .tool b:focus {
-    background: #666;
-  }
+    .tool b.r {
+      border-left: solid 1px #666;
+      box-shadow: -1px 0 0 #252525;
+      border-right: none;
+    }
 
-  .tool b.r {
-    border-left: solid 1px #666;
-    box-shadow: -1px 0 0 #252525;
-    border-right: none;
-  }
+    .tool b.sel {
+      color: #268bd2;
+    }
 
-  .tool b.sel {
-    color: #268bd2;
-  }
+    .tool b,
+    .tool b > a {
+      color: #999;
+    }
 
-  .tool b,
-  .tool b > a {
-    color: #999;
-  }
+    /* toolbar text controls */
+    .tool > a {
+      color: #999;
+      text-shadow: none;
+      text-shadow: 0 -1px 0 #252525;
+      border-bottom: none !important;
+      border-top: solid 1px transparent;
+      top: -2px;
+      position: relative;
+    }
 
-  /* toolbar text controls */
-  .tool > a {
-    color: #999;
-    text-shadow: none;
-    text-shadow: 0 -1px 0 #252525;
-    border-bottom: none !important;
-    border-top: solid 1px transparent;
-    top: -2px;
-    position: relative;
-  }
+    .tool > a:hover,
+    .tool > a.sel,
+    .tool > a:active,
+    .tool > a:focus {
+      color: #252525;
+      text-shadow: 0 1px 0 #666;
+      background: #666;
+      border-top-color: #252525;
+    }
 
-  .tool > a:hover,
-  .tool > a.sel,
-  .tool > a:active,
-  .tool > a:focus {
-    color: #252525;
-    text-shadow: 0 1px 0 #666;
-    background: #666;
-    border-top-color: #252525;
-  }
+    .tool > a:hover {
+      background: #666;
+    }
 
-  .tool > a:hover {
-    background: #666;
-  }
+    .tool > a:active,
+    .tool > a:focus {
+      background: #666;
+    }
 
-  .tool > a:active,
-  .tool > a:focus {
-    background: #666;
-  }
+    .tool > a.nosel,
+    .tool > a.nosel:hover,
+    .tool > a.nosel:active,
+    .tool > a.nosel:focus {
+      background: none !important;
+      border-color: transparent !important;
+      color: #999;
+      text-shadow: none;
+    }
 
-  .tool > a.nosel,
-  .tool > a.nosel:hover,
-  .tool > a.nosel:active,
-  .tool > a.nosel:focus {
-    background: none !important;
-    border-color: transparent !important;
-    color: #999;
-    text-shadow: none;
-  }
+    /* suggestions */
+    .suggestions {
+      background: #252525;
+      border: solid 1px #666;
+    }
 
-  /* suggestions */
-  .suggestions {
-    background: #252525;
-    border: solid 1px #666;
-  }
+    .suggestions li.sel,
+    .suggestions li:hover {
+      background: #4a4a4a;
+      border-color: #4a4a4a;
+    }
 
-  .suggestions li.sel,
-  .suggestions li:hover {
-    background: #4a4a4a;
-    border-color: #4a4a4a;
-  }
+    /* those are invisible */
+    .poslin {
+      background: #c00;
+    }
 
-  /* those are invisible */
-  .poslin {
-    background: #c00;
-  }
-
-  #sugpos {
-    background: #cfc;
+    #sugpos {
+      background: #cfc;
+    }
   }
 }
