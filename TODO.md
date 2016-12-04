@@ -1,7 +1,9 @@
 Client-side
 ===============
-- separate interface modules
-- add React
+- animate hide/show write area
+- console (output)
+- commands (input)
+- suggestions
 - handle \t characters in console (indentation)
 - profile
 
@@ -17,6 +19,7 @@ Finally
 Ideas
 =============
 - material-ui?
+- revisit theming pattern
 - react-native app
 - read QR code - connect to console automatically if on same network
 - allow access to context (require('node-codein')({ ...options }));

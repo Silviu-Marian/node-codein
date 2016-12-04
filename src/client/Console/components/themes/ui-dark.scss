@@ -1,0 +1,98 @@
+/**
+ * Mixins
+ */
+
+@mixin gradientBg {
+  background: linear-gradient(180deg, #4a4a4a 0%, #252525 100%);
+  border-color: #666;
+}
+
+@mixin textShadow {
+  text-shadow: 0 -1px 0 #000;
+}
+
+/**
+ * Modules
+ */
+.ConsoleView {
+  background-color: #252525;
+  color: #aaa;
+
+  @include textShadow;
+}
+
+.Toolbar {
+  @include gradientBg;
+}
+
+.ResizeHandle {
+  @include gradientBg;
+}
+
+.Switch {
+  font-weight: bold;
+  color: #aaa;
+
+  @include textShadow;
+
+  &:focus,
+  &:hover {
+    background: none;
+  }
+
+  &:active,
+  &.ActiveSwitch {
+    background: #666;
+    border-top: solid 1px #000;
+  }
+}
+
+.Label {
+  font-weight: bold;
+}
+
+.Button {
+  background: none;
+  color: #999;
+  position: relative;
+  border-color: #000;
+
+  &::before,
+  &::after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    height: 100%;
+  }
+
+  &::before {
+    border-left: solid 1px #666;
+    left: -2px;
+  }
+
+  &::after {
+    border-right: solid 1px #666;
+    right: -2px;
+  }
+
+  &:active,
+  &:focus,
+  &:hover,
+  &.ActiveButton {
+    color: #fff;
+    background: none;
+  }
+
+  &.ActiveButton {
+    &,
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+      color: #268bd2;
+    }
+  }
+}

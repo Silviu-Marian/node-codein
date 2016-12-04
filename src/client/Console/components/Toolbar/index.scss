@@ -1,0 +1,12 @@
+.toolbar {
+  flex-shrink: 1;
+  display: flex;
+  height: 30px;
+  border: solid 1px #666;
+  border-left: none;
+  border-right: none;
+}
+
+.separator {
+  flex-grow: 1;
+}

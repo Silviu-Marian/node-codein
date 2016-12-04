@@ -1,0 +1,21 @@
+.switch {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  align-self: center;
+  padding: 4px 7px;
+  margin: 0 1px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+
+  &:active,
+  &:hover,
+  &:focus,
+  &.active {
+    background: #666;
+    color: #fff;
+  }
+}

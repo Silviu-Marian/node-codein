@@ -1,0 +1,25 @@
+.button {
+  width: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: solid 1px #666;
+  border-top: none;
+  border-bottom: none;
+  background: none;
+
+  &.active {
+    color: #268bd2;
+  }
+
+  &:active,
+  &:hover {
+    outline: none;
+  }
+
+  &:active > * {
+    margin-top: 1px;
+  }
+}

@@ -2,7 +2,7 @@
 
 import { store } from 'client/Core/store';
 
-import { CONSOLE_STORE_PATH, clear, pushNotification } from 'client/Console/services/console';
+import { CONSOLE_STORE_PATH, clear } from 'client/Console/services/console';
 import { execute, addToHistory } from 'client/Console/services/commands';
 import { SETTINGS_STORE_PATH } from 'client/Console/services/settings';
 import { SUGGESTIONS_STORE_PATH } from 'client/Console/services/suggestions';
@@ -116,9 +116,4 @@ $(document).ready(() => {
         return true;
       });
   });
-
-  // @TODO: should not be the case
-  if (!$.browser.webkit) {
-    store.dispatch(pushNotification('WARNING: Unsupported browser, certain features might be unavailable.', 'warning'));
-  }
 });

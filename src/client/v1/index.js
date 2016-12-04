@@ -5,7 +5,7 @@ import 'client/v1/styles/style.scss';
 import 'client/v1/styles/style.light.scss';
 import 'client/v1/styles/style.dark.scss';
 
-/* Scripts */
+/* Libraries */
 import 'client/v1/libraries/jq';
 import 'client/v1/libraries/jquery-ui-1.8.21.custom.min';
 
@@ -16,6 +16,10 @@ import 'client/v1/libraries/jq.unsel';
 import 'client/v1/libraries/jq.storage';
 import 'client/v1/libraries/dragscrollable';
 
+/* HTML */
+import 'client/v1/ensureMarkup';
+
+/* Scripts */
 import 'client/v1/scripts/history';
 import 'client/v1/scripts/sse';
 import 'client/v1/scripts/suggest';
