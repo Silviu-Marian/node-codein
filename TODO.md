@@ -1,11 +1,13 @@
 Client-side
 ===============
-- animate hide/show write area
 - console (output)
 - commands (input)
 - suggestions
+- expand/collapse control in bottom toolbar
 - handle \t characters in console (indentation)
+- toolbar button titles
 - profile
+- reduce elements count in ConsoleView
 
 Finally
 =============

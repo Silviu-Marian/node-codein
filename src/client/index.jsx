@@ -7,7 +7,7 @@ import { store } from 'client/Core/store';
 import Promise from 'promise-polyfill';
 
 // Import v1
-import 'client/v1';
+// import 'client/v1';
 
 // Import v2
 import Console from 'client/Console';
@@ -18,7 +18,7 @@ import styles from './index.scss';
 window.Promise = window.Promise || Promise;
 window.addEventListener('load', () => {
   const alwaysTrue = true;
-  if (alwaysTrue) {
+  if (!alwaysTrue) {
     return;
   }
   // Markup

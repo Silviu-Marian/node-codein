@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
+import cn from 'classnames';
 import styles from './index.scss';
 
-export default function Icon({ glyph }) {
+export default function Icon({ glyph, className }) {
   return (
-    <span className={styles.Icon}>
+    <span className={cn(styles.Icon, className)}>
       {Icon.glyphs[glyph]}
     </span>
   );
@@ -27,4 +28,5 @@ Icon.glyphs = {
 
 Icon.propTypes = {
   glyph: PropTypes.oneOf(Object.keys(Icon.glyphs)),
+  className: PropTypes.string,
 };

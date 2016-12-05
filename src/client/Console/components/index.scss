@@ -24,7 +24,31 @@
 
 .commandsInput {
   min-height: 50px;
-  max-height: 85%;
+  max-height: 500px;
+  position: relative;
+  border: solid transparent 5px;
+  border-left-width: 20px;
+
+  &.leave {
+    height: auto;
+    overflow: hidden;
+  }
+
+  &.leaveActive {
+    max-height: 1%;
+    min-height: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    height: 0 !important;
+    transition: all 0.2s;
+  }
+}
+
+.commandsInputIcon {
+  color: #268bd2;
+  position: absolute;
+  left: -13px;
+  top: 5px;
 }
 
 .nodeJsLogo {

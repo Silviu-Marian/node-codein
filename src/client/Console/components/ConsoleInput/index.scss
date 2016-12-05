@@ -1,0 +1,32 @@
+
+.ConsoleInput {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+
+  :global {
+    .CodeMirror {
+      height: 100%;
+
+      * {
+        font-family: "Consolas", "Courier New", Courier, monospace;
+        font-size: 12px;
+        text-shadow: none;
+      }
+
+      &-scroll {
+        height: 100%;
+        box-sizing: border-box;
+        overflow: hidden !important;
+      }
+    }
+  }
+}

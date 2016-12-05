@@ -1,35 +1,43 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import cn from 'classnames';
-
+import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import Toolbar, { Separator, Switch, Button, Label } from './Toolbar/';
 import Icon from './Icon/';
 import ResizeHandle from './ResizeHandle';
+import ConsoleInput from './ConsoleInput';
+import ConsoleOutput from './ConsoleOutput';
 
 import styles from './index.scss';
-import uiDark from './themes/ui-dark.scss';
-import uiLight from './themes/ui-light.scss';
 
-import nodeJsLogo from './images/node-logo.png';
+import nodeJsLogo from './nodeJSLogo.png';
 
 const title = 'Node.js® CodeIn';
-const themes = {
-  'ui-dark': uiDark,
-  'ui-light': uiLight,
-};
+
 
 export default class ConsoleView extends Component {
 
   static propTypes = {
     settings: PropTypes.shape({}),
+    commands: PropTypes.arrayOf(PropTypes.shape({})),
     saveSettings: PropTypes.func,
     clear: PropTypes.func,
+    executeCommand: PropTypes.func,
     isConnected: PropTypes.bool,
+    theme: PropTypes.shape({}),
   };
 
   render() {
-    const { settings, isConnected, saveSettings, clear } = this.props;
+    const {
+      settings,
+      isConnected,
+      commands,
+      saveSettings,
+      clear,
+      executeCommand,
+      theme,
+    } = this.props;
     const {
       preserveInput,
       showScrollbars,
@@ -39,7 +47,6 @@ export default class ConsoleView extends Component {
       themeClass,
       inputAreaHeight,
     } = settings;
-    const theme = themes[themeClass];
 
     return (
       <div className={cn(styles.consoleView, theme.ConsoleView)}>
@@ -69,24 +76,52 @@ export default class ConsoleView extends Component {
           <Button href="https://twitter.com/nodejs" target="_blank"><Icon glyph="twitter" /></Button>
         </Toolbar>
 
-        <div className={styles.consoleOutput}>Resizable area - console output</div>
+        <ConsoleOutput
+          className={styles.consoleOutput}
+          commands={commands}
+        />
 
         <ResizeHandle
-          onStart={() => { this.startingHeight = this.commandsInput.clientHeight; }}
-          onDrag={(y) => { this.commandsInput.style.height = `${this.startingHeight - y}px`; }}
-          onStop={y => saveSettings({ inputAreaHeight: this.startingHeight - y })}
+          onStart={() => {
+            if (showInputArea) {
+              this.startingHeight = this.commandsInput.clientHeight;
+            }
+          }}
+          onDrag={(y) => { if (showInputArea) { this.commandsInput.style.height = `${this.startingHeight - y}px`; } }}
+          onStop={(y) => {
+            if (showInputArea) {
+              saveSettings({ inputAreaHeight: this.startingHeight - y });
+            }
+          }}
         >
           <button className={cn(styles.resizeHandle, theme.ResizeHandle)} />
         </ResizeHandle>
 
-
-        <div
-          ref={(c) => { this.commandsInput = c; }}
-          className={styles.commandsInput}
-          style={{ ...{ height: (inputAreaHeight && `${inputAreaHeight}px`) || '' } }}
+        <CSSTransitionGroup
+          component="div"
+          transitionName={{
+            leave: styles.leave,
+            leaveActive: styles.leaveActive,
+          }}
+          transitionEnter={false}
+          transitionLeave
+          transitionLeaveTimeout={500}
         >
-          Resizable area - commands
-        </div>
+          {(showInputArea && (
+          <div
+            ref={(c) => { this.commandsInput = c; }}
+            className={styles.commandsInput}
+            style={{ ...{ height: (inputAreaHeight && `${inputAreaHeight}px`) || '' } }}
+          >
+            <Icon glyph="input" className={styles.commandsInputIcon} />
+            <ConsoleInput
+              preserveInputAfterSend={preserveInput}
+              onSend={executeCommand}
+              onClear={clear}
+            />
+          </div>
+          )) || null}
+        </CSSTransitionGroup>
 
         <Toolbar theme={theme}>
           <Button active={showInputArea} onClick={() => saveSettings({ showInputArea: !showInputArea })}><Icon glyph="console" /></Button>
@@ -102,9 +137,9 @@ export default class ConsoleView extends Component {
 
           <Separator className={styles.largeSeparator} />
 
-          <Label className={styles.connectionStatus}><Icon glyph={(isConnected && 'connected') || 'disconnected'} /></Label>
+          <Label><Icon glyph={(isConnected && 'connected') || 'disconnected'} /></Label>
           <Separator className={styles.smallSeparator} />
-          <Label className={styles.connectionStatusText}>{(isConnected && 'Connected') || 'Disconnected' }</Label>
+          <Label>{(isConnected && 'Connected') || 'Disconnected' }</Label>
 
           <Separator />
 
