@@ -35,7 +35,7 @@ const commonConfig = {
       { test: /\.(js|jsx)$/i, exclude: /node_modules/i, loader: `babel-loader?${babelConfig}` },
       { test: /\.json$/i, loader: 'json-loader' },
       { test: /\.css$/i, loaders: ['style-loader', 'css-loader?importLoaders=1', 'postcss-loader'] },
-      { test: /\.scss$/i, loader: ['style-loader', 'css-loader?modules&importLoaders=2', 'postcss-loader', 'sass-loader'] },
+      { test: /\.scss$/i, loader: ['style-loader', 'css-loader?modules&localIdentName=[local]-[hash:base64:5]&importLoaders=2', 'postcss-loader', 'sass-loader'] },
       { test: /\.(jpeg|jpg|jpe|svg|gif|png)$/i, loader: 'url-loader?limit=102400' },
       { test: /\.(woff|woff2|eot|ttf|svg|svgz)$/i, loader: 'url-loader?limit=102400' },
     ],

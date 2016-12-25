@@ -10,7 +10,7 @@ import styles from './ObjectVal.scss';
 export default class ObjectVal extends Component {
 
   static propTypes = {
-    data: PropTypes.shape,
+    data: PropTypes.shape({}),
     expand: PropTypes.bool,
   };
 
@@ -37,12 +37,13 @@ export default class ObjectVal extends Component {
 
   render() {
     const { data, expand } = this.props;
+    const { expanded } = this.state;
     return (
       <ul className={styles.object}>
         {
           Object.keys(data.value)
             .sort()
-            .map(key => ({ keyName: key, ...data.value.value[key] }))
+            .map(key => ({ keyName: key, ...data.value[key] }))
             .map((item) => {
               const { type, value, keyName } = item;
               if (
@@ -52,18 +53,18 @@ export default class ObjectVal extends Component {
                 (type === 'object' && typeof value === 'undefined')
               ) {
                 return (
-                  <li className={styles.primitiveRow}>
+                  <li key={keyName} className={styles.primitiveRow}>
                     <Primitive nl2br data={item} />
                   </li>
                 );
               }
 
               return (
-                <li className={styles.object}>
+                <li key={keyName} className={styles.object}>
                   <button onClick={() => this.toggleExpanded(keyName)}>{'>'}</button>
                   <span>{keyName}</span>
-                  {(expand && (
-                    <ObjectVal data={item} expand={this.state.expanded[keyName]} />
+                  {((expand || (expanded && expanded[keyName])) && (
+                    <ObjectVal data={item} />
                   )) || null}
                 </li>
               );

@@ -14,6 +14,7 @@ export default class ConsoleOutput extends Component {
     className: PropTypes.string,
     commands: PropTypes.arrayOf(PropTypes.shape({})),
     autoExpand: PropTypes.bool,
+    theme: PropTypes.shape({}),
   }
 
   static defaultProps = {
@@ -36,10 +37,10 @@ export default class ConsoleOutput extends Component {
   }
 
   render() {
-    const { className, commands, autoExpand } = this.props;
+    const { className, commands, autoExpand, theme } = this.props;
     return (
       <div
-        className={cn(styles.consoleOutput, className)}
+        className={cn(styles.consoleOutput, className, theme.consoleOutput)}
         ref={(c) => { this.viewer = c; }}
       >
         {

@@ -77,6 +77,7 @@ export default class ConsoleView extends Component {
         </Toolbar>
 
         <ConsoleOutput
+          theme={theme}
           className={styles.consoleOutput}
           commands={commands}
         />

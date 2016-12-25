@@ -31,14 +31,14 @@ export default function Primitive({ data, nl2br = false }) {
         .replace(/\r\n/gmi, '\n')
         .replace(/\r/gmi, '\n')
         .split(/\n/gmi)
-        .reduce((accum, item) => [...accum, item, <br />], [])
+        .reduce((accum, item, key) => [...accum, item, <br key={key} />], [])
       ) || value;
 
       if (type === 'string') {
-        return <span className={styles.string} nl2br={nl2br}>{body}</span>;
+        return <span className={styles.string}>{body}</span>;
       }
 
-      return <span className={styles.function} nl2br={nl2br}>{body}</span>;
+      return <span className={styles.function}>{body}</span>;
     }
     case type === 'object':
     default:
